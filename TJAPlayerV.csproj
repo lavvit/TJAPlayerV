@@ -1,10 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <BaseOutputPath>./</BaseOutputPath>
+
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishReadyToRun>true</PublishReadyToRun>
+
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Debug\**" />
+    <Compile Remove="Loader\**" />
+    <Compile Remove="Release\**" />
+    <Compile Remove="TJAPlayerV\**" />
+    <EmbeddedResource Remove="Debug\**" />
+    <EmbeddedResource Remove="Loader\**" />
+    <EmbeddedResource Remove="Release\**" />
+    <EmbeddedResource Remove="TJAPlayerV\**" />
+    <None Remove="Debug\**" />
+    <None Remove="Loader\**" />
+    <None Remove="Release\**" />
+    <None Remove="TJAPlayerV\**" />
+    <_GlobalJsonStartingDir Remove="Loader\**" />
+    <_GlobalJsonStartingDir Remove="Debug\**" />
+    <_GlobalJsonStartingDir Remove="Release\**" />
+    <_GlobalJsonStartingDir Remove="TJAPlayerV\**" />
+  </ItemGroup>
 
 </Project>

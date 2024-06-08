@@ -5,6 +5,8 @@ VisualStudioVersion = 17.11.34929.205
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TJAPlayerV", "TJAPlayerV.csproj", "{06117AF8-7CD8-4208-AF0B-9DA390006537}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loader", "Loader\Loader.csproj", "{498CB4B0-8633-48F2-BBCD-4CFEAE30E213}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{06117AF8-7CD8-4208-AF0B-9DA390006537}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06117AF8-7CD8-4208-AF0B-9DA390006537}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06117AF8-7CD8-4208-AF0B-9DA390006537}.Release|Any CPU.Build.0 = Release|Any CPU
+		{498CB4B0-8633-48F2-BBCD-4CFEAE30E213}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{498CB4B0-8633-48F2-BBCD-4CFEAE30E213}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{498CB4B0-8633-48F2-BBCD-4CFEAE30E213}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{498CB4B0-8633-48F2-BBCD-4CFEAE30E213}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
