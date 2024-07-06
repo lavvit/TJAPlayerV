@@ -39,6 +39,8 @@
     <_GlobalJsonStartingDir Remove="Debug\**" />
     <_GlobalJsonStartingDir Remove="Release\**" />
     <_GlobalJsonStartingDir Remove="TJAPlayerV\**" />
+    <ProjectReference Include="..\SeaDrop\SeaDrop.csproj" />
+    <ProjectReference Include="Loader\Loader.csproj" />
   </ItemGroup>
 
 </Project>
