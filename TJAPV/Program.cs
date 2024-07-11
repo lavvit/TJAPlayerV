@@ -1,4 +1,5 @@
 ﻿using SeaDrop;
+using static TJAPlayerV.Data;
 
 namespace TJAPlayerV
 {
@@ -12,12 +13,14 @@ namespace TJAPlayerV
 
         public override void Enable()
         {
+            Data.Init();
             Songs.Load();
             base.Enable();
         }
 
         public override void Draw()
         {
+            Drawing.Text(20, 0, DataDir);
             var songs = Songs.SongList;
             Drawing.Text(20, 20, $"Songs : {songs.Count}   {Songs.Loading}");
 
