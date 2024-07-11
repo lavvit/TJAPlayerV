@@ -4,12 +4,10 @@ namespace TJAPlayerV
 {
     public class Program : Scene
     {
-        public static string val = "";
         public static void Main(string[] args)
         {
-            DXLib.MultiThreading = true;
             DXLib.SetDrop(true);
-            DXLib.Init(new Program(), 1920, 1080);
+            DXLib.Init(new Program(), 1280, 720);
         }
 
         public override void Enable()
@@ -20,7 +18,6 @@ namespace TJAPlayerV
 
         public override void Draw()
         {
-            Drawing.Text(20, 20, val);
             var songs = Songs.SongList;
             Drawing.Text(20, 20, $"Songs : {songs.Count}   {Songs.Loading}");
 

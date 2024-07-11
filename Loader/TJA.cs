@@ -16,6 +16,7 @@ namespace Loader
 
         public TJA(string path)
         {
+            if (string.IsNullOrEmpty(path)) return;
             Init(path);
             if (!Enable) return;
 

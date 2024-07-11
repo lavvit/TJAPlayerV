@@ -17,7 +17,7 @@ namespace TJAPlayerV
             DateTime time = DateTime.Now;
             FolderList = [];
             SongList = [];
-            foreach (string p in Text.Read($@"{DXLib.AppPath}\Path.ini"))
+            foreach (string p in Text.Read($@"{DXLib.AppPath}\Data\Path.ini"))
             {
                 Loading = "";
                 if (p.StartsWith("1)"))
