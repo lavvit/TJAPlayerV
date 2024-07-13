@@ -3,14 +3,14 @@ namespace Loader
 {
     public class Skin
     {
-        public static string SkinPath = "jiro";
+        public static readonly string SkinPath = "taiko";
         public static int Width, Height, LaneW, LaneH;
 
         public static void LoadSkin()
         {
-            string root = Root;
+            string root = Root(SkinPath);
 
-            Tx.Lane = new($"{root}sfieldbg.png");
+            /*Tx.Lane = new($"{root}sfieldbg.png");
 
             LaneW = 512; LaneH = 56;
             if (File.Exists($"{root}dispconf.ini"))
@@ -28,16 +28,13 @@ namespace Loader
                             break;
                     }
                 }
-            }
+            }*/
         }
-        public static string Root
+        public static string Root(string skin = "Default")
         {
-            get
-            {
-                string root = @$"{Path.GetFullPath($@"{DXLib.AppPath}\System")}\";
-                if (!string.IsNullOrEmpty(SkinPath)) root += @$"{SkinPath}\";
-                return root;
-            }
+            string root = @$"{Path.GetFullPath($@"{DXLib.AppPath}\System")}\";
+            if (!string.IsNullOrEmpty(skin)) root += @$"{skin}\";
+            return Directory.Exists(root) ? root : Root();
         }
     }
 

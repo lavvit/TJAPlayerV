@@ -1,5 +1,6 @@
 ﻿using SeaDrop;
-using static TJAPlayerV.Data;
+using static SeaDrop.Drawing;
+using static SeaDrop.DXLib;
 
 namespace TJAPlayerV
 {
@@ -7,9 +8,13 @@ namespace TJAPlayerV
     {
         public static void Main(string[] args)
         {
-            DXLib.SetDrop(true);
-            DXLib.Init(new Program(), 1280, 720);
+            SetDrop(true);
+            Init(new taiko.Entry(), 1280, 720);
+            //Init(new taiko.Startup());
+            //Init(new Program(), 3840, 2160, 0.5);
         }
+
+        public static string Version = "0.1.0";
 
         public override void Enable()
         {
@@ -20,15 +25,17 @@ namespace TJAPlayerV
 
         public override void Draw()
         {
-            Drawing.Text(20, 0, DataDir);
+            Text(20, 0, Data.DataDir);
             var songs = Songs.SongList;
-            Drawing.Text(20, 20, $"Songs : {songs.Count}   {Songs.Loading}");
+            Text(20, 20, $"Songs : {songs.Count}   {Songs.Loading}");
 
-            for (int i = 0; i < 200; i++)
+            int w = Width / 480;
+            int h = (Height - 60) / 20;
+            for (int i = 0; i < w * h; i++)
             {
                 if (i >= songs.Count) break;
                 Song song = songs[i];
-                Drawing.Text(20 + 400 * (i / 50), 60 + 20 * (i % 50), song);
+                Text(20 + 480 * (i / h), 60 + 20 * (i % h), song);
             }
 
 
