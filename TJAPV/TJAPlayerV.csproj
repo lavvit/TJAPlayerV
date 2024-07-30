@@ -35,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\SeaDrop\Extend\SeaDropExtend.csproj" />
     <ProjectReference Include="..\..\SeaDrop\SeaDrop.csproj" />
     <ProjectReference Include="..\Loader\Loader.csproj" />
   </ItemGroup>

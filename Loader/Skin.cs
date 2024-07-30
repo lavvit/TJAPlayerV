@@ -10,7 +10,7 @@ namespace Loader
         {
             string root = Root(SkinPath);
 
-            /*Tx.Lane = new($"{root}sfieldbg.png");
+            Tx.Lane = new($"{root}sfieldbg.png");
 
             LaneW = 512; LaneH = 56;
             if (File.Exists($"{root}dispconf.ini"))
@@ -28,7 +28,7 @@ namespace Loader
                             break;
                     }
                 }
-            }*/
+            }
         }
         public static string Root(string skin = "Default")
         {

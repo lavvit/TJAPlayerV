@@ -5,6 +5,8 @@ namespace Loader
         public string Title = "";
         public string SubTitle = "";
         public string Wave = "";
+        public double Offset = 0;
+        public double BPM = 120;
 
         public Header() { }
 
@@ -32,6 +34,14 @@ namespace Loader
                             break;
                         case "wave":
                             Wave = value;
+                            break;
+                        case "offset":
+                            if (float.TryParse(value, out float fval)) Offset = fval;
+                                else double.TryParse(value, out Offset);
+                            break;
+                        case "bpm":
+                            if (float.TryParse(value, out fval)) BPM = fval;
+                            else double.TryParse(value, out BPM);
                             break;
                     }
                 }

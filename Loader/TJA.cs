@@ -1,9 +1,10 @@
 ﻿using SeaDrop;
 using System.Text;
+using System.Xml;
 
 namespace Loader
 {
-    public struct TJA
+    public class TJA
     {
         public string FilePath = "";
         public string SoundPath = "";
@@ -21,7 +22,58 @@ namespace Loader
             if (!Enable) return;
 
             var list = Text.Read(FilePath);
+            bool endcomma = false;
+            for (int i = 0; i < list.Count; i++)
+            {
+                //コメント削除
+                if (list[i].Replace("/ /", "//").Contains("//"))
+                {
+                    string s = list[i].Replace("/ /", "//");
+                    list[i] = s.Substring(0, s.IndexOf("//") == -1 ? 0 : s.IndexOf("//"));
+                }
+                //バグ対策
+                if (list.Count > 0 && list[i] == "," && (i == 0 || endcomma))
+                    list[i] = list[i].Replace(",", "0,");
+                if (!string.IsNullOrEmpty(list[i].Trim()) && !list[i].StartsWith("#")) endcomma = list[i].EndsWith(",");
+                if (list[i].StartsWith("#START")) endcomma = true;
+            }
             Header = new Header(list);
+
+            for (int i = 0; i < Courses.Length; i++)
+            {
+                bool read = false;
+                int nowcourse = 3;
+                List<string> strings = [];
+                foreach (string str in list)
+                {
+                    string[] header = str.Split(':');
+                    if (header.Length > 1)
+                    {
+                        switch (header[0])
+                        {
+                            case "COURSE":
+                                nowcourse = Course.GetCourse(header[1]);
+                                break;
+                        }
+                    }
+                    else if (str.StartsWith("#START"))
+                    {
+                        if (nowcourse == i)
+                        {
+                            read = true;
+                        }
+                    }
+                    else if (str.StartsWith("#END"))
+                    {
+                        read = false;
+                    }
+                    else if (read)
+                    {
+                        strings.Add(str);
+                    }
+                }
+                Courses[i] = new Course(Header, strings);
+            }
 
             SoundPath = $"{Path.GetDirectoryName(FilePath)}\\{Header.Wave}";
             //Length = (int)GetMoviePlaybackTime(SoundPath).TotalMilliseconds;
@@ -41,7 +93,7 @@ namespace Loader
             Length = Sound.GetLength(SoundPath);
         }
 
-        public override readonly string ToString()
+        public override string ToString()
         {
             if (!Enable) return FilePath;
             var time = new DateTime().AddMilliseconds(Length > -1 ? Length : 0);

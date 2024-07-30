@@ -7,10 +7,12 @@ namespace TJAPlayerV
     /// </summary>
     public class Language
     {
+        public static string NowLang = "jp";
         public static Dictionary<string, string> Texts = [];
 
         public static void Load(string lang = "jp")
         {
+            NowLang = lang;
             Texts = Lang.AllTexts();
             string path = $@"{DXLib.AppPath}\Lang\{lang}\lang.json";
             if (File.Exists(path))

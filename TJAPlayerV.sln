@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeaDrop", "..\SeaDrop\SeaDr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TJAPlayerV", "TJAPV\TJAPlayerV.csproj", "{180F9962-A7AE-4F97-BD6B-6170243ED76F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeaDropExtend", "..\SeaDrop\Extend\SeaDropExtend.csproj", "{0107DEB3-BC72-457D-B6C3-618EE416B22B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{180F9962-A7AE-4F97-BD6B-6170243ED76F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{180F9962-A7AE-4F97-BD6B-6170243ED76F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{180F9962-A7AE-4F97-BD6B-6170243ED76F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0107DEB3-BC72-457D-B6C3-618EE416B22B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0107DEB3-BC72-457D-B6C3-618EE416B22B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0107DEB3-BC72-457D-B6C3-618EE416B22B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0107DEB3-BC72-457D-B6C3-618EE416B22B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
