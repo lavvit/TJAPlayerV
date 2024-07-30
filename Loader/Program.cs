@@ -66,7 +66,6 @@ namespace Loader
         {
             if (Key.IsPushed(EKey.Esc)) DXLib.End();
 
-
             if (Lane.TJA != null)
             {
                 if (Key.IsPushed(EKey.Space))
@@ -109,40 +108,8 @@ namespace Loader
                     Sound.PlayLoopUp();
                 }
 
-                foreach (var bar in Lane.TJA.Courses[Lane.Course].Lanes[0])
-                {
-                    foreach (var chip in bar.Chips)
-                    {
-                        if (Lane.Timer.Value >= chip.Time - 8 && !chip.Hit)
-                        {
-                            switch (chip.Type)
-                            {
-                                case ENote.Don:
-                                    taiko.SFx.Don.Play();
-                                    chip.Hit = true;
-                                    chip.HitTime = Lane.Timer.Value;
-                                    break;
-                                case ENote.Ka:
-                                    taiko.SFx.Ka.Play();
-                                    chip.Hit = true;
-                                    chip.HitTime = Lane.Timer.Value;
-                                    break;
-                                case ENote.DON:
-                                    taiko.SFx.Don.Play();
-                                    taiko.SFx.Don.Play();
-                                    chip.Hit = true;
-                                    chip.HitTime = Lane.Timer.Value;
-                                    break;
-                                case ENote.KA:
-                                    taiko.SFx.Ka.Play();
-                                    taiko.SFx.Ka.Play();
-                                    chip.Hit = true;
-                                    chip.HitTime = Lane.Timer.Value;
-                                    break;
-                            }
-                        }
-                    }
-                }
+                if (Lane.IsAuto) Lane.Auto();
+                else Lane.Hit();
             }
 
             base.Update();

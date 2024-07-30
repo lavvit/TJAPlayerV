@@ -1,13 +1,13 @@
 ﻿using SeaDrop;
-using System.Drawing;
 
 namespace Loader
 {
     public class Lane
     {
         public string Path = "";
-        public TJA TJA;
+        public TJA TJA = new("");
         public int Course = 3;
+        public bool IsAuto = true;
         public static Counter Timer = new(-2000, int.MaxValue);
 
         public Lane() { }
@@ -180,6 +180,50 @@ namespace Loader
         #endregion
         
         #region Process
+
+        public void Auto()
+        {
+            if (TJA.Courses[Course] == null) return;
+            foreach (var bar in TJA.Courses[Course].Lanes[0])
+            {
+                foreach (var chip in bar.Chips)
+                {
+                    if (Timer.Value >= chip.Time - 8 && !chip.Hit)
+                    {
+                        switch (chip.Type)
+                        {
+                            case ENote.Don:
+                                taiko.SFx.Don.Play();
+                                chip.Hit = true;
+                                chip.HitTime = Timer.Value;
+                                break;
+                            case ENote.Ka:
+                                taiko.SFx.Ka.Play();
+                                chip.Hit = true;
+                                chip.HitTime = Timer.Value;
+                                break;
+                            case ENote.DON:
+                                taiko.SFx.Don.Play();
+                                taiko.SFx.Don.Play();
+                                chip.Hit = true;
+                                chip.HitTime = Timer.Value;
+                                break;
+                            case ENote.KA:
+                                taiko.SFx.Ka.Play();
+                                taiko.SFx.Ka.Play();
+                                chip.Hit = true;
+                                chip.HitTime = Timer.Value;
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+        public void Hit()
+        {
+
+        }
+
         #endregion
     }
 }
