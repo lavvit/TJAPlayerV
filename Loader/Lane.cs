@@ -19,6 +19,7 @@ namespace Loader
             TJA.SetLen();
         }
 
+        #region Draw
         public void Draw(double x, double y)
         {
             Timer.Tick();
@@ -55,6 +56,7 @@ namespace Loader
         public void DrawNote(double x, double y, Chip note)
         {
             int size = taiko.Tx.Notes.Enable ? taiko.Tx.Notes.Height / 4 : DXLib.Height;
+            int[] color = [ 0xe7372a, 0x4ecdbe, 0xecb907, 0xff5000, 0xcc245e ];
             switch (note.Type)
             {
                 case ENote.Don:
@@ -69,7 +71,94 @@ namespace Loader
                     }
                     else
                     {
-                        Drawing.Circle(x + NoteX(note), y, 32, 0xc0c0c0, false, 2);
+                        Drawing.Circle(x + NoteX(note), y, note.Type >= ENote.DON ? 44 : 32, (int)note.Type % 2 == (int)ENote.Don ? color[0] : color[1], false, 2);
+                    }
+                    break;
+                case ENote.Roll:
+                case ENote.ROLL:
+                    if (taiko.Tx.Notes.Enable)
+                    {
+                        int rec = note.Type == ENote.ROLL ? 8 : 5;
+                        if (note.LongEnd != null)
+                        {
+                            double endx = x + NoteX(note.LongEnd);
+                            double endy = y;
+                            
+                            taiko.Tx.Notes.SetRectangle(size * (rec + 1), 0, size, size);
+                            taiko.Tx.Notes.XYScale = ((endx - (x + NoteX(note))) / size, 1.0);
+                            taiko.Tx.Notes.ReferencePoint = ReferencePoint.CenterLeft;
+                            taiko.Tx.Notes.Draw(x + NoteX(note), y);
+                            taiko.Tx.Notes.XYScale = null;
+
+                            taiko.Tx.Notes.SetRectangle(size * (rec + 2), 0, size, size);
+                            taiko.Tx.Notes.ReferencePoint = ReferencePoint.CenterLeft;
+                            taiko.Tx.Notes.Draw(endx, endy);
+                        }
+                        taiko.Tx.Notes.SetRectangle(size * rec, 0, size, size);
+                        taiko.Tx.Notes.ReferencePoint = ReferencePoint.Center;
+                        taiko.Tx.Notes.Draw(x + NoteX(note), y);
+                    }
+                    else
+                    {
+                        if (note.LongEnd != null)
+                        {
+                            double endx = x + NoteX(note.LongEnd);
+                            double endy = y;
+                            
+                            Drawing.BoxZ(x, y - size / 2, endx, endy + size / 2, 0xc0c0c0);
+                            Drawing.Circle(x + NoteX(note), y, 32, 0xc0c0c0, false, 2);
+                        }
+                        Drawing.Circle(x + NoteX(note), y, note.Type >= ENote.ROLL ? 44 : 32, color[2], false, 2);
+                    }
+                    break;
+                case ENote.Balloon:
+                case ENote.Potato:
+                    if (taiko.Tx.Notes.Enable)
+                    {
+                        int rec = note.Type == ENote.Potato ? 13 : 11;
+                        double balloonx = x + NoteX(note);
+                        double balloony = y;
+                        if (note.LongEnd != null)
+                        {
+                            double endx = x + NoteX(note.LongEnd);
+                            double endy = y;
+                            if (Timer.Value >= note.LongEnd.Time)
+                            {
+                                balloonx = endx;
+                                balloony = endy;
+                            }
+                            else if (Timer.Value >= note.Time)
+                            {
+                                balloonx = x;
+                                balloony = y;
+                            }
+                        }
+                        taiko.Tx.Notes.SetRectangle(size * rec, 0, size * 2, size);
+                        taiko.Tx.Notes.SetCenter(size / 2.0, size / 2.0);
+                        taiko.Tx.Notes.ReferencePoint = ReferencePoint.Center;
+                        taiko.Tx.Notes.Draw(balloonx, balloony);
+                        taiko.Tx.Notes.Center = null;
+                    }
+                    else
+                    {
+                        double balloonx = x + NoteX(note);
+                        double balloony = y;
+                        if (note.LongEnd != null)
+                        {
+                            double endx = x + NoteX(note.LongEnd);
+                            double endy = y;
+                            if (Timer.Value >= note.LongEnd.Time)
+                            {
+                                balloonx = endx;
+                                balloony = endy;
+                            }
+                            else if (Timer.Value >= note.Time)
+                            {
+                                balloonx = x;
+                                balloony = y;
+                            }
+                        }
+                        Drawing.Circle(balloonx, balloony, note.Type >= ENote.Potato ? 44 : 32, note.Type >= ENote.Potato ? color[4] : color[3], false, 2);
                     }
                     break;
             }
@@ -88,5 +177,9 @@ namespace Loader
         {
             return NoteX(bar.Time, bar.BPM, bar.Scroll);
         }
+        #endregion
+        
+        #region Process
+        #endregion
     }
 }

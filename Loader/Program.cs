@@ -34,9 +34,10 @@ namespace Loader
         {
             Lane.Draw(0, 0);
             Drawing.Text(2, 2, $"{Lane.Timer.Value}" + (Lane.TJA != null ? $"/{Lane.TJA.Length}" : ""));
-            Drawing.Text(DXLib.Width - 80, 10, Lane.TJA != null ? Lane.TJA.Header.Title : "", null, 0xffffff, 0, false, ReferencePoint.TopRight);
-            Drawing.Text(DXLib.Width - 60, 10, FPS.AverageValue, 0x00ff00);
-
+            Drawing.Text(160, 2, $"{NowMeasure()}/{AllMeasure()} {NowMeasureText()}");
+            Drawing.Text(DXLib.Width - 130, 2, Lane.TJA != null ? Lane.TJA.Header.Title : "", null, 0xffffff, 0, false, ReferencePoint.TopRight);
+            Drawing.Text(DXLib.Width - 120, 2, Lane.TJA != null ? (ECourse)Lane.Course : "", Course.GetCourseColor((ECourse)Lane.Course));
+            Drawing.Text(DXLib.Width - 60, 2, FPS.AverageValue, 0x00ff00);
             //Drawing.Text(20, 20, Lane.TJA);
             /*if (Lane.TJA.Courses[Course] != null)
             {
@@ -89,6 +90,14 @@ namespace Loader
                         Lane.Timer.Start();
                     }
                 }
+                if (Key.IsPushed(EKey.Up))
+                {
+                    if (Lane.Course++ >= (int)ECourse.Edit) Lane.Course = (int)ECourse.Edit;
+                }
+                if (Key.IsPushed(EKey.Down))
+                {
+                    if (Lane.Course-- <= (int)ECourse.Easy) Lane.Course = (int)ECourse.Easy;
+                }
                 if (Key.IsPushed(EKey.F9))
                 {
                     Text.Save(Lane.TJA.Courses[Lane.Course].Texts, $"{DXLib.AppPath}\\{Path.GetFileNameWithoutExtension(Lane.Path)}.txt");
@@ -106,24 +115,29 @@ namespace Loader
                     {
                         if (Lane.Timer.Value >= chip.Time - 8 && !chip.Hit)
                         {
-                            chip.Hit = true;
-                            chip.HitTime = Lane.Timer.Value;
-
                             switch (chip.Type)
                             {
                                 case ENote.Don:
                                     taiko.SFx.Don.Play();
+                                    chip.Hit = true;
+                                    chip.HitTime = Lane.Timer.Value;
                                     break;
                                 case ENote.Ka:
                                     taiko.SFx.Ka.Play();
+                                    chip.Hit = true;
+                                    chip.HitTime = Lane.Timer.Value;
                                     break;
                                 case ENote.DON:
                                     taiko.SFx.Don.Play();
                                     taiko.SFx.Don.Play();
+                                    chip.Hit = true;
+                                    chip.HitTime = Lane.Timer.Value;
                                     break;
                                 case ENote.KA:
                                     taiko.SFx.Ka.Play();
                                     taiko.SFx.Ka.Play();
+                                    chip.Hit = true;
+                                    chip.HitTime = Lane.Timer.Value;
                                     break;
                             }
                         }
@@ -150,6 +164,33 @@ namespace Loader
                     chip.HitTime = 0;
                 }
             }
+        }
+
+        public static int NowMeasure()
+        {
+            if (Lane.TJA == null || Lane.TJA.Courses[Lane.Course] == null) return 0;
+            var course = Lane.TJA.Courses[Lane.Course];
+            int n = 0;
+            for (int i = 0; i < course.Lanes[0].Length; i++)
+            {
+                var bar = course.Lanes[0][i];
+                if (Lane.Timer.Value < bar.Time) return n;
+                n++;
+            }
+            return n;
+        }
+        public static string NowMeasureText()
+        {
+            if (Lane.TJA == null || Lane.TJA.Courses[Lane.Course] == null) return "";
+            int num = NowMeasure();
+            if (num == 0) return "";
+            return Lane.TJA.Courses[Lane.Course].Lanes[0][NowMeasure() - 1].ToString();
+        }
+        public static int AllMeasure()
+        {
+            if (Lane.TJA == null || Lane.TJA.Courses[Lane.Course] == null) return 0;
+            var course = Lane.TJA.Courses[Lane.Course];
+            return course.Lanes[0].Length;
         }
     }
 }

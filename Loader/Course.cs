@@ -59,6 +59,7 @@ namespace Loader
                                 Position = n,
                             };
                             if (lane[b] == null) lane[b] = new Bar();
+                            lane[b].Chips.Add(chip);
                             if (note == '8')
                             {
                                 if (longs.Count > 0)
@@ -74,7 +75,6 @@ namespace Loader
                             }
                             else
                             {
-                                lane[b].Chips.Add(chip);
                                 if (note >= '5')
                                 {
                                     longs.Add((b, n));
@@ -121,6 +121,7 @@ namespace Loader
 
         public void Set()
         {
+            var lane = Lanes[0];
             double t = -Head.Offset;
 
             double bpm = Head.BPM;
@@ -128,9 +129,9 @@ namespace Loader
             double measure = 1;
             double measuremom = 1;
 
-            for (int i = 0; i < Lanes[0].Length; i++)
+            for (int i = 0; i < lane.Length; i++)
             {
-                var bar = Lanes[0][i];
+                var bar = lane[i];
                 bar.Time = t;
                 bar.BPM = bpm;
                 bar.Measure = measure;
@@ -185,11 +186,19 @@ namespace Loader
                 }
                 if (bar.Measure * bar.BPM > 0)t += length;
             }
-            for (int i = 0; i < LongList[0].Count; i++)
+            var longs = LongList[0];
+            for (int i = 0; i < longs.Count; i++)
             {
-                var longend = LongList[0][i];
-                var chip = Lanes[0][longend.line].Chips[longend.pos - 1];
-                    chip.Time = t + GetTime(Lanes[0][chip.Bar], chip.Position);
+                var longend = longs[i];
+                var chip = lane[longend.line].Chips[longend.pos - 1].LongEnd;
+                if (chip != null)
+                {
+                    var lbar = lane[chip.Bar - 1];
+                    var endchip = lane[chip.Bar - 1].Chips[chip.Position - 1];
+                    chip.Time = endchip.Time;
+                    chip.BPM = endchip.BPM;
+                    chip.Scroll = endchip.Scroll;
+                }
             }
         }
 
@@ -241,5 +250,41 @@ namespace Loader
                 default: return 3;
             }
         }
+
+        public static int GetCourseColor(ECourse course, bool enable = true)
+        {
+            int[] col = [ 0xff4000, 0x80ff40, 0x00c0ff, 0xff00c0, 0xc000ff, 0x804000, 0x4000c0 ];
+            if (!enable) col = [ 0x802000, 0x408020, 0x006080, 0x800060, 0x600080, 0x402000, 0x200080 ];
+            switch (course)
+            {
+                case ECourse.Easy:
+                    return col[0];
+                case ECourse.Normal:
+                    return col[1];
+                case ECourse.Hard:
+                    return col[2];
+                case ECourse.Oni:
+                    return col[3];
+                case ECourse.Edit:
+                    return col[4];
+                case ECourse.Tower:
+                    return col[5];
+                case ECourse.Dan:
+                    return col[6];
+                default:
+                    return 0xffffff;
+            }
+        }
+    }
+
+    public enum ECourse
+    {
+        Easy = 0,
+        Normal = 1,
+        Hard = 2,
+        Oni = 3,
+        Edit = 4,
+        Tower = 5,
+        Dan = 6,
     }
 }
