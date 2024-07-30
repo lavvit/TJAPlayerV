@@ -34,21 +34,28 @@ namespace Loader
         {
             Lane.Draw(0, 0);
             Drawing.Text(2, 2, $"{Lane.Timer.Value}" + (Lane.TJA != null ? $"/{Lane.TJA.Length}" : ""));
-            Drawing.Text(160, 2, $"{NowMeasure()}/{AllMeasure()} {NowMeasureText()}");
+            Drawing.Text(160, 2, $"{Lane.NowMeasure()}/{Lane.AllMeasure()} {Lane.NowMeasureText()}");
             Drawing.Text(DXLib.Width - 130, 2, Lane.TJA != null ? Lane.TJA.Header.Title : "", null, 0xffffff, 0, false, ReferencePoint.TopRight);
             Drawing.Text(DXLib.Width - 120, 2, Lane.TJA != null ? (ECourse)Lane.Course : "", Course.GetCourseColor((ECourse)Lane.Course));
             Drawing.Text(DXLib.Width - 60, 2, FPS.AverageValue, 0x00ff00);
             //Drawing.Text(20, 20, Lane.TJA);
-            /*if (Lane.TJA.Courses[Course] != null)
+            if (Lane.TJA != null && Lane.TJA.Courses[Lane.Course] != null)
             {
                 int y = 0;
-                Drawing.Text(520, 20 + y, Lane.TJA.Courses[Course].Lanes[0]);
-                foreach (var line in Lane.TJA.Courses[Course].Lanes[0])
+                var c = Lane.NowChip(108);
+                foreach (var line in c)
+                {
+                    Drawing.Text(320, 20 + 20 + y, line);
+                    y += Drawing.TextSize(line).Height;
+                }
+                /*int y = 0;
+                Drawing.Text(520, 20 + y, Lane.TJA.Courses[Lane.Course].Lanes[0]);
+                foreach (var line in Lane.TJA.Courses[Lane.Course].Lanes[0])
                 {
                     Drawing.Text(320, 20 + y, line);
                     y += Drawing.TextSize(line).Height;
-                }
-            }*/
+                }*/
+            }
 
             base.Draw();
         }
@@ -92,10 +99,16 @@ namespace Loader
                 if (Key.IsPushed(EKey.Up))
                 {
                     if (Lane.Course++ >= (int)ECourse.Edit) Lane.Course = (int)ECourse.Edit;
+                    NoteSet();
                 }
                 if (Key.IsPushed(EKey.Down))
                 {
                     if (Lane.Course-- <= (int)ECourse.Easy) Lane.Course = (int)ECourse.Easy;
+                    NoteSet();
+                }
+                if (Key.IsPushed(EKey.F1))
+                {
+                    Lane.IsAuto = !Lane.IsAuto;
                 }
                 if (Key.IsPushed(EKey.F9))
                 {
@@ -109,7 +122,11 @@ namespace Loader
                 }
 
                 if (Lane.IsAuto) Lane.Auto();
-                else Lane.Hit();
+                else
+                {
+                    bool[] hit = [Key.IsPushed(EKey.F), Key.IsPushed(EKey.J), Key.IsPushed(EKey.D), Key.IsPushed(EKey.K)];
+                    Lane.Hit(hit);
+                }
             }
 
             base.Update();
@@ -123,41 +140,21 @@ namespace Loader
                 Sound.Time = 0;
             }
             Lane.Timer.Reset();
-            foreach (var bar in Lane.TJA.Courses[Lane.Course].Lanes[0])
+            NoteSet();
+        }
+        public static void NoteSet()
+        {
+            if (Lane.TJA != null && Lane.TJA.Courses[Lane.Course] != null)
             {
-                foreach (var chip in bar.Chips)
+                foreach (var bar in Lane.TJA.Courses[Lane.Course].Lanes[0])
                 {
-                    chip.Hit = false;
-                    chip.HitTime = 0;
+                    foreach (var chip in bar.Chips)
+                    {
+                        chip.Hit = false;
+                        chip.HitTime = 0;
+                    }
                 }
             }
-        }
-
-        public static int NowMeasure()
-        {
-            if (Lane.TJA == null || Lane.TJA.Courses[Lane.Course] == null) return 0;
-            var course = Lane.TJA.Courses[Lane.Course];
-            int n = 0;
-            for (int i = 0; i < course.Lanes[0].Length; i++)
-            {
-                var bar = course.Lanes[0][i];
-                if (Lane.Timer.Value < bar.Time) return n;
-                n++;
-            }
-            return n;
-        }
-        public static string NowMeasureText()
-        {
-            if (Lane.TJA == null || Lane.TJA.Courses[Lane.Course] == null) return "";
-            int num = NowMeasure();
-            if (num == 0) return "";
-            return Lane.TJA.Courses[Lane.Course].Lanes[0][NowMeasure() - 1].ToString();
-        }
-        public static int AllMeasure()
-        {
-            if (Lane.TJA == null || Lane.TJA.Courses[Lane.Course] == null) return 0;
-            var course = Lane.TJA.Courses[Lane.Course];
-            return course.Lanes[0].Length;
         }
     }
 }

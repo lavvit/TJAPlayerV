@@ -57,6 +57,7 @@ namespace Loader
                             {
                                 Type = (ENote)int.Parse(note.ToString()),
                                 Position = n,
+                                Bar = b + 1,
                             };
                             if (lane[b] == null) lane[b] = new Bar();
                             lane[b].Chips.Add(chip);
@@ -96,7 +97,8 @@ namespace Loader
                                 Chip chip = new Chip()
                                 {
                                     Type = ENote.None,
-                                    Position = n
+                                    Position = n,
+                                    Bar = b + 1,
                                 };
                                 lane[b].Chips.Add(chip);
                                 lane[b].NoteCount = n;

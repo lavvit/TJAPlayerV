@@ -1,6 +1,5 @@
 ﻿using SeaDrop;
 using System.Text;
-using System.Xml;
 
 namespace Loader
 {
@@ -102,6 +101,7 @@ namespace Loader
 
         public static string GetTJAHash(string filename)
         {
+            if (!File.Exists(filename)) return "";
             //ファイルを開く
             FileStream fs = new(
                 filename,

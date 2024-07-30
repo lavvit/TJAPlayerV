@@ -8,6 +8,8 @@ namespace Loader
         public TJA TJA = new("");
         public int Course = 3;
         public bool IsAuto = true;
+        public int StartMeasure = 0;
+        public double StartTime = -2000;
         public static Counter Timer = new(-2000, int.MaxValue);
 
         public Lane() { }
@@ -56,7 +58,7 @@ namespace Loader
         public void DrawNote(double x, double y, Chip note)
         {
             int size = taiko.Tx.Notes.Enable ? taiko.Tx.Notes.Height / 4 : DXLib.Height;
-            int[] color = [ 0xe7372a, 0x4ecdbe, 0xecb907, 0xff5000, 0xcc245e ];
+            int[] color = [0xe7372a, 0x4ecdbe, 0xecb907, 0xff5000, 0xcc245e];
             switch (note.Type)
             {
                 case ENote.Don:
@@ -83,7 +85,7 @@ namespace Loader
                         {
                             double endx = x + NoteX(note.LongEnd);
                             double endy = y;
-                            
+
                             taiko.Tx.Notes.SetRectangle(size * (rec + 1), 0, size, size);
                             taiko.Tx.Notes.XYScale = ((endx - (x + NoteX(note))) / size, 1.0);
                             taiko.Tx.Notes.ReferencePoint = ReferencePoint.CenterLeft;
@@ -104,7 +106,7 @@ namespace Loader
                         {
                             double endx = x + NoteX(note.LongEnd);
                             double endy = y;
-                            
+
                             Drawing.BoxZ(x, y - size / 2, endx, endy + size / 2, 0xc0c0c0);
                             Drawing.Circle(x + NoteX(note), y, 32, 0xc0c0c0, false, 2);
                         }
@@ -178,7 +180,7 @@ namespace Loader
             return NoteX(bar.Time, bar.BPM, bar.Scroll);
         }
         #endregion
-        
+
         #region Process
 
         public void Auto()
@@ -195,35 +197,119 @@ namespace Loader
                             case ENote.Don:
                                 taiko.SFx.Don.Play();
                                 chip.Hit = true;
-                                chip.HitTime = Timer.Value;
                                 break;
                             case ENote.Ka:
                                 taiko.SFx.Ka.Play();
                                 chip.Hit = true;
-                                chip.HitTime = Timer.Value;
                                 break;
                             case ENote.DON:
                                 taiko.SFx.Don.Play();
                                 taiko.SFx.Don.Play();
                                 chip.Hit = true;
-                                chip.HitTime = Timer.Value;
                                 break;
                             case ENote.KA:
                                 taiko.SFx.Ka.Play();
                                 taiko.SFx.Ka.Play();
                                 chip.Hit = true;
-                                chip.HitTime = Timer.Value;
                                 break;
                         }
                     }
                 }
             }
         }
-        public void Hit()
+        public void Hit(bool[] hits)
         {
+            if (TJA == null || TJA.Courses[Course] == null) return;
+            //ld,rd,lk,rk
+            bool isdon = hits[0] || hits[1];
+            bool iska = hits[2] || hits[3];
 
+            if (isdon)
+                taiko.SFx.Don.Play();
+            if (iska)
+                taiko.SFx.Ka.Play();
+
+            if (!isdon && !iska) return;
+
+            int[] judge = [16, 25, 75, 108];
+            var chips = NowChip(judge[3]);
+            bool hitted = false;
+            foreach (var loc in chips)
+            {
+                var chip = TJA.Courses[Course].Lanes[0][loc.Lane].Chips[loc.Pos];
+                switch (chip.Type)
+                {
+                    case ENote.Don:
+                    case ENote.DON:
+                        if (isdon && !hitted)
+                        {
+                            chip.Hit = true;
+                            chip.HitTime = Timer.Value;
+                            hitted = true;
+                        }
+                        break;
+                    case ENote.Ka:
+                    case ENote.KA:
+                        if (iska && !hitted)
+                        {
+                            chip.Hit = true;
+                            chip.HitTime = Timer.Value;
+                            hitted = true;
+                        }
+                        break;
+                }
+            }
+        }
+
+        public (int Lane, int Pos)[] NowChip(int range = 120)
+        {
+            if (TJA == null || TJA.Courses[Course] == null) return [];
+            List<(int, int)> chips = [];
+            foreach (var bar in TJA.Courses[Course].Lanes[0])
+            {
+                foreach (var chip in bar.Chips)
+                {
+                    if (!chip.Hit)
+                    {
+                        bool add = Math.Abs(Timer.Value - chip.Time) <= range;
+                        if (chip.LongEnd != null)
+                            add &= Math.Abs(Timer.Value - chip.LongEnd.Time) <= range;
+                        if (add)
+                            chips.Add((chip.Bar - 1, chip.Position - 1));
+                    }
+                }
+            }
+            return chips.ToArray();
         }
 
         #endregion
+
+
+        public int NowMeasure()
+        {
+            if (TJA == null || TJA.Courses[Course] == null) return 0;
+            var course = TJA.Courses[Course];
+            int n = 0;
+            for (int i = 0; i < course.Lanes[0].Length; i++)
+            {
+                var bar = course.Lanes[0][i];
+                if (Timer.Value < bar.Time) return n;
+                n++;
+            }
+            return n;
+        }
+        public string NowMeasureText()
+        {
+            if (TJA == null || TJA.Courses[Course] == null) return "";
+            int num = NowMeasure();
+            if (num == 0) return "";
+            return TJA.Courses[Course].Lanes[0][NowMeasure() - 1].ToString();
+        }
+        public int AllMeasure()
+        {
+            if (TJA == null || TJA.Courses[Course] == null) return 0;
+            var course = TJA.Courses[Course];
+            return course.Lanes[0].Length;
+        }
     }
 }

@@ -34,7 +34,10 @@ namespace Loader
         {
             string root = @$"{Path.GetFullPath($@"{DXLib.AppPath}\System")}\";
             if (!string.IsNullOrEmpty(skin)) root += @$"{skin}\";
-            return Directory.Exists(root) ? root : Root();
+            if (Directory.Exists(root)) return root;
+            root = @$"{Path.GetFullPath($@"{DXLib.AppPath}\System")}\Default\";
+            if (Directory.Exists(root)) return root;
+            return "";
         }
     }
 
