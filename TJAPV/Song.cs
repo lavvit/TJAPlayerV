@@ -10,13 +10,17 @@ namespace TJAPlayerV
         public static List<string> SongPaths = [];
         public static List<Song> SongList = [];
         public static List<Song> NowSongList = [];
+        public static ELoadState LoadStatus = ELoadState.None;
         public static string Loading = "";
 
         public static void Load()
         {
+            LoadStatus = ELoadState.Loading;
             DateTime time = DateTime.Now;
             FolderList = [];
             SongList = [];
+            try
+            {
             foreach (string p in Text.Read($@"{Data.DataDir}Path.ini"))
             {
                 Loading = "";
@@ -81,6 +85,12 @@ namespace TJAPlayerV
             SongList.Sort((a, b) => { return new NaturalComparer().Compare(a.Path, b.Path); });
             var ltime = DateTime.Now - time;
             Loading = $"LoadTime:{ltime.TotalSeconds:0.0}s";
+            LoadStatus = ELoadState.Success;
+            }
+            catch (Exception)
+            {
+                LoadStatus = ELoadState.Error;
+            }
         }
     }
 
@@ -91,5 +101,13 @@ namespace TJAPlayerV
         public TJA TJA;
 
         public override string ToString() { return $"{Name} {TJA.Length}"; }
+    }
+    
+    public enum ELoadState
+    {
+        None,
+        Loading,
+        Success,
+        Error = -1,
     }
 }

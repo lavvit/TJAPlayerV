@@ -38,6 +38,8 @@ namespace TJAPlayerV.taiko
 
         public override void Disable()
         {
+            Entry_BGM_In.Stop();
+            Entry_BGM.Stop();
             base.Disable();
         }
 

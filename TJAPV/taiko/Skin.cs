@@ -82,6 +82,7 @@ namespace TJAPlayerV.taiko
             if (!Sfx.Decide.Enable) Sfx.Decide = Sfx.Don;
             Sfx.Change = new($@"{root}Change.ogg");
             if (!Sfx.Change.Enable) Sfx.Change = Sfx.Ka;
+            Sfx.Error = new($@"{root}Error.ogg");
 
             Sfx.Entry_BGM = new($@"{bgm}Title.ogg");
             Sfx.Entry_BGM_In = new($@"{bgm}Title_Start.ogg");
@@ -92,15 +93,18 @@ namespace TJAPlayerV.taiko
             Sfx.Join[0] = new($@"{root}Join.ogg");
             Sfx.Join[1] = new($@"{root}Join_2P.ogg");
 
+            Sfx.SongSelect_BGM = new($@"{bgm}SongSelect.ogg");
+            Sfx.SongSelect_BGM_In = new($@"{bgm}SongSelect_Start.ogg");
+
             var conf = new Settings($"{Root}SkinConfig.ini");
 
 
         }
 
-        public static int Count(string ディレクトリ名, string プレフィックス = "", string 拡張子 = ".png")
+        public static int Count(string dir, string prefix = "", string ext = ".png")
         {
             int num = 0;
-            while (File.Exists(ディレクトリ名 + プレフィックス + num + 拡張子))
+            while (File.Exists(dir + prefix + num + ext))
             {
                 num++;
             }
@@ -218,7 +222,8 @@ namespace TJAPlayerV.taiko
             Don = new(),
             Ka = new(),
             Decide = new(),
-            Change = new()
+            Change = new(),
+            Error = new()
             ;
 
         #region Entry
@@ -227,7 +232,10 @@ namespace TJAPlayerV.taiko
             Entry_BGM_In = new(),
             Entry_Wait = new(),
             Entry_Side = new(),
-            Card = new()
+            Card = new(),
+
+            SongSelect_BGM = new(),
+            SongSelect_BGM_In = new()
             ;
         public static Sound[]
             Join = new Sound[2];

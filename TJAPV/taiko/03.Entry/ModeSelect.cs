@@ -13,6 +13,8 @@ namespace TJAPlayerV.taiko
         private static int[] UsedMenu = [];
         private static int[] MenuPos = [];
 
+        public static int Players = 1;
+
         public static Counter BarAnimeIn = new(0, 1295), BarMove = new(0, 250, 1200), CharaIn = new(0, 180, 2000);
 
         public static void Draw()
@@ -33,6 +35,7 @@ namespace TJAPlayerV.taiko
 
                     // Get Menu reference
                     var _menu = Menu.Menus[UsedMenu[i]];
+                    if (_menu == null) continue;
                     Texture _bar = _menu.barTex;
                     Texture _chara = _menu.barChara;
 
@@ -248,7 +251,7 @@ namespace TJAPlayerV.taiko
                 }
             }
 
-            for (int player = 0; player < 1; player++)//ConfigIni.nPlayerCount
+            for (int player = 0; player < Players; player++)//ConfigIni.nPlayerCount
             {
                 if (player >= 2) continue;
 
@@ -318,26 +321,34 @@ namespace TJAPlayerV.taiko
 
             if (Key.IsPushed(EKey.F) || Key.IsPushed(EKey.J))
             {
-                /*bool operationSucceded = false;
-
-                if (Menu.Menus[usedMenus[this.n現在の選択行モード選択]].rp == E戻り値.DANGAMESTART || Menu.Menus[usedMenus[this.n現在の選択行モード選択]].rp == E戻り値.TAIKOTOWERSSTART)
+                bool select = false;
+                var menu = Menu.Menus[UsedMenu[Cursor]];
+                switch (menu.rp)
                 {
-                    if (Songs管理.list曲ルート_Dan.Count > 0 && ConfigIni.nPlayerCount == 1)
-                        operationSucceded = true;
+                    case EMenu.DANGAMESTART:
+                    case EMenu.TAIKOTOWERSSTART:
+                        if (Players == 1)// && Songs.DanList.Count > 0
+                        {
+                            select = true;
+                        }
+                        break;
+                    default:
+                        if (menu.implemented && (Players == 1 || !menu._1pRestricted))
+                        {
+                            select = true;
+                        }
+                        break;
                 }
-                else if (Menu.Menus[usedMenus[this.n現在の選択行モード選択]].implemented == true
-                    && (Menu.Menus[usedMenus[this.n現在の選択行モード選択]]._1pRestricted == false
-                    || ConfigIni.nPlayerCount == 1))
-                    operationSucceded = true;
 
-                if (operationSucceded == true)
+                if (select)
                 {
-                    Skin.soundDecideSFX.tPlay();
-                    this.actFO.tフェードアウト開始(0, 500);
-                    base.ePhaseID = CStage.EPhase.Common_FADEOUT;
+                    Decide.Play();
+
+                    //Move
+                    Thread.Sleep(1000);
+                    DXLib.SceneChange(new SongSelect());
                 }
-                else
-                    Skin.soundError.tPlay();*/
+                else Error.Play();
             }
         }
 
