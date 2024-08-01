@@ -9,7 +9,6 @@ namespace TJAPlayerV
         public static List<(string Name, bool Enable)> FolderList = [];
         public static List<string> SongPaths = [];
         public static List<Song> SongList = [];
-        public static List<Song> NowSongList = [];
         public static ELoadState LoadStatus = ELoadState.None;
         public static string Loading = "";
 
@@ -72,6 +71,7 @@ namespace TJAPlayerV
                 SongList = songs.ToList();
             });//
             SongList = songs.ToList();
+            SongList.Sort((a, b) => { return new NaturalComparer().Compare(a.Path, b.Path); });
 
             //foreach (var song in SongList)
             Parallel.ForEach(SongList, song =>
@@ -82,7 +82,7 @@ namespace TJAPlayerV
 
 
             Loading = "Sorting Songs...";
-            SongList.Sort((a, b) => { return new NaturalComparer().Compare(a.Path, b.Path); });
+            SongList.Sort((a, b) => { int r = DirNum(a.Path) - DirNum(b.Path); return r != 0 ? r : new NaturalComparer().Compare(a.Path, b.Path); });
             var ltime = DateTime.Now - time;
             Loading = $"LoadTime:{ltime.TotalSeconds:0.0}s";
             LoadStatus = ELoadState.Success;
@@ -92,13 +92,23 @@ namespace TJAPlayerV
                 LoadStatus = ELoadState.Error;
             }
         }
+        
+        private static int DirNum(string path)
+        {
+            for (int i = 0; i < FolderList.Count; i++)
+            {
+                if (path.Contains(FolderList[i].Name))
+                    return i;
+            }
+            return -1;
+        }
     }
 
     public class Song
     {
         public string Path = "";
         public string Name = "";
-        public TJA TJA;
+        public TJA TJA = new("");
 
         public override string ToString() { return $"{Name} {TJA.Length}"; }
     }

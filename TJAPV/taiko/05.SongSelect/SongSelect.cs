@@ -18,15 +18,27 @@ namespace TJAPlayerV.taiko
                return Sfx.SongSelect_BGM;
            }
         }
+        public static Texture NowBG = new(), PrevBG = new();
 
         public override void Enable()
         {
+            SongBars.Load();
             BGMIn.Play();
+            NowBG = Tx.SongSelect_BG;
             base.Enable();
         }
 
         public override void Draw()
         {
+            if (PrevBG.Enable)
+            {
+                PrevBG.Draw(0, 0);
+            }
+            if (NowBG.Enable)
+            {
+                NowBG.Draw(0, 0);
+            }
+            SongBars.Draw();
             base.Draw();
         }
         public override void Debug()
@@ -45,7 +57,25 @@ namespace TJAPlayerV.taiko
             {
                 BGM.PlayLoopUp();
             }
+            if (Key.IsPushed(EKey.D))
+            {
+                Change();
+            }
+            if (Key.IsPushed(EKey.K))
+            {
+                Change();
+            }
+            if (Key.IsPushed(EKey.Enter))
+            {
+                SongBars.BoxOpen.Reset();
+                SongBars.BoxOpen.Start();
+            }
             base.Update();
+        }
+        
+        public static void Change()
+        {
+            
         }
     }
 }
