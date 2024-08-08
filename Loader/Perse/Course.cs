@@ -1,5 +1,3 @@
-using SeaDrop;
-
 namespace Loader
 {
     public class Course
@@ -13,7 +11,7 @@ namespace Loader
         {
             Head = header;
             Texts = text;
-            Lanes = [ new Bar[BarCount()] ];
+            Lanes = [new Bar[BarCount()]];
 
             Read();
             Set();
@@ -115,8 +113,11 @@ namespace Loader
                         Position = n + 1,
                         Name = line,
                     };
-                    if (lane[b] == null) lane[b] = new Bar();
-                    lane[b].Commands.Add(command);
+                    if (b < lane.Length)
+                    {
+                        if (lane[b] == null) lane[b] = new Bar();
+                        lane[b].Commands.Add(command);
+                    }
                 }
             }
         }
@@ -158,7 +159,7 @@ namespace Loader
                                     if (j == 0) bar.Scroll = scroll;
                                     break;
                                 case "bpmchange":
-                                    if (float.TryParse(value, out  fval)) bpm = fval;
+                                    if (float.TryParse(value, out fval)) bpm = fval;
                                     else double.TryParse(value, out bpm);
                                     if (j == 0) bar.BPM = bpm;
                                     break;
@@ -186,7 +187,7 @@ namespace Loader
                 {
                     bar.Chips[j].Time = t + GetTime(bar, j);
                 }
-                if (bar.Measure * bar.BPM > 0)t += length;
+                if (bar.Measure * bar.BPM > 0) t += length;
             }
             var longs = LongList[0];
             for (int i = 0; i < longs.Count; i++)
@@ -255,8 +256,8 @@ namespace Loader
 
         public static int GetCourseColor(ECourse course, bool enable = true)
         {
-            int[] col = [ 0xff4000, 0x80ff40, 0x00c0ff, 0xff00c0, 0xc000ff, 0x804000, 0x4000c0 ];
-            if (!enable) col = [ 0x802000, 0x408020, 0x006080, 0x800060, 0x600080, 0x402000, 0x200080 ];
+            int[] col = [0xff4000, 0x80ff40, 0x00c0ff, 0xff00c0, 0xc000ff, 0x804000, 0x4000c0];
+            if (!enable) col = [0x802000, 0x408020, 0x006080, 0x800060, 0x600080, 0x402000, 0x200080];
             switch (course)
             {
                 case ECourse.Easy:

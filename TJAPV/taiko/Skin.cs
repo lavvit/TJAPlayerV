@@ -8,133 +8,143 @@ namespace TJAPlayerV.taiko
     /// </summary>
     public class Skin
     {
+        public static ELoadState LoadStatus = ELoadState.None;
         public static string Root = Loader.Skin.Root("taiko");
         public static string GraphRoot = $"{Root}\\Graphics\\";
         public static string SoundRoot = $"{Root}\\Sounds\\";
 
         public static void Load()
         {
-            Loader.taiko.Skin.Load();
-
-            string root = GraphRoot;
-
-            string title = $@"{root}1_Title\";
-            string song = $@"{root}3_SongSelect\";
-            string game = $@"{root}5_Game\";
-
-            for (int i = 0; i < 3; i++)
+            LoadStatus = ELoadState.Loading;
+            try
             {
-                Tx.Network[i] = new($@"{title}NetworkStatus\{i}.png");
-            }
+                Loader.taiko.Skin.Load();
 
-            #region Entry
-            Tx.Entry_BG = new($@"{title}Background.png");
-            Tx.Entry_Bar = new($@"{title}Entry_Bar.png");
-            Tx.Entry_Bar_Text = new($@"{title}Entry_Bar_Text.png");
-            Tx.Entry_Card[0] = new($@"{title}Bana_NG.png");
-            Tx.Entry_Card[1] = new($@"{title}Bana_OK.png");
-            Tx.Entry_Card_Load[0] = new($@"{title}Banapas_Load.png");
-            Tx.Entry_Card_Load[1] = new($@"{title}Banapas_Load_Text.png");
-            Tx.Entry_Card_Load[2] = new($@"{title}Banapas_Load_Anime.png");
-            Tx.Entry_Card_Clear[0] = new($@"{title}Banapas_Load_Clear.png");
-            Tx.Entry_Card_Clear[1] = new($@"{title}Banapas_Load_Clear_Anime.png");
-            Tx.Entry_Card_Failed[0] = new($@"{title}Banapas_Load_Failure.png");
-            Tx.Entry_Card_Failed[1] = new($@"{title}Banapas_Load_Clear_Anime.png");
-            for (int i = 0; i < 4; i++)
-            {
-                Tx.Entry_Header[i] = new($@"{title}Header\{i}.png");
-            }
-            Tx.Entry_Player[0] = new($@"{title}Entry_Player.png");
-            Tx.Entry_Player[1] = new($@"{title}Entry_Player_Select_Bar.png");
-            Tx.Entry_Player[2] = new($@"{title}Entry_Player_Select.png");
-            #endregion
+                string root = GraphRoot;
 
-            #region ModeSelect
+                string title = $@"{root}1_Title\";
+                string song = $@"{root}3_SongSelect\";
+                string game = $@"{root}5_Game\";
 
-            string mode = $@"{title}Mode\";
-            Tx.ModeSelect_Bar = new Texture[Menu.MenuCount + 1];
-            Tx.ModeSelect_Bar_Chara = new Texture[Menu.MenuCount];
-            Tx.ModeSelect_Bar_Text = new Texture[Menu.MenuCount];
-            Tx.ModeSelect_Bar_EpText = new Texture[Menu.MenuCount];
-
-            for (int i = 0; i < Menu.MenuCount; i++)
-            {
-                if (Directory.Exists(mode))
+                for (int i = 0; i < 3; i++)
                 {
-                    string box = $@"{mode}{Menu.GetBoxName(i)}\";
-                    Tx.ModeSelect_Bar[i] = new(@$"{box}Bar.png");
-                    Tx.ModeSelect_Bar_Chara[i] = new(@$"{box}Chara.png");
-                    Tx.ModeSelect_Bar_Text[i] = new(@$"{box}Text.png");
-                    Tx.ModeSelect_Bar_EpText[i] = new(@$"{box}EpText.png");
-
-                    Tx.ModeSelect_Bar[Menu.MenuCount] = new(@$"{mode}Bar_White.png");
-                    Tx.ModeSelect_Bar_Flash = new(@$"{mode}Bar_Flash.png");
-                    Tx.ModeSelect_Bar_Frame[0] = new(@$"{mode}WhiteFrame.png");
-                    Tx.ModeSelect_Bar_Frame[1] = new(@$"{mode}YellowFrame.png");
-                    Tx.ModeSelect_Bar_Frame[2] = new(@$"{mode}YellowFrameBack.png");
+                    Tx.Network[i] = new($@"{title}NetworkStatus\{i}.png");
                 }
-                else
+
+                #region Entry
+                Tx.Entry_BG = new($@"{title}Background.png");
+                Tx.Entry_Bar = new($@"{title}Entry_Bar.png");
+                Tx.Entry_Bar_Text = new($@"{title}Entry_Bar_Text.png");
+                Tx.Entry_Card[0] = new($@"{title}Bana_NG.png");
+                Tx.Entry_Card[1] = new($@"{title}Bana_OK.png");
+                Tx.Entry_Card_Load[0] = new($@"{title}Banapas_Load.png");
+                Tx.Entry_Card_Load[1] = new($@"{title}Banapas_Load_Text.png");
+                Tx.Entry_Card_Load[2] = new($@"{title}Banapas_Load_Anime.png");
+                Tx.Entry_Card_Clear[0] = new($@"{title}Banapas_Load_Clear.png");
+                Tx.Entry_Card_Clear[1] = new($@"{title}Banapas_Load_Clear_Anime.png");
+                Tx.Entry_Card_Failed[0] = new($@"{title}Banapas_Load_Failure.png");
+                Tx.Entry_Card_Failed[1] = new($@"{title}Banapas_Load_Clear_Anime.png");
+                for (int i = 0; i < 4; i++)
                 {
-                    Tx.ModeSelect_Bar[i] = new(@$"{title}ModeSelect_Bar_{i.ToString()}.png");
-                    Tx.ModeSelect_Bar_Chara[i] = new(@$"{title}ModeSelect_Bar_Chara_{i.ToString()}.png");
-
-                    Tx.ModeSelect_Bar[Menu.MenuCount] = new(@$"{title}ModeSelect_Bar_Overlay.png");
+                    Tx.Entry_Header[i] = new($@"{title}Header\{i}.png");
                 }
+                Tx.Entry_Player[0] = new($@"{title}Entry_Player.png");
+                Tx.Entry_Player[1] = new($@"{title}Entry_Player_Select_Bar.png");
+                Tx.Entry_Player[2] = new($@"{title}Entry_Player_Select.png");
+                #endregion
+
+                #region ModeSelect
+
+                string mode = $@"{title}Mode\";
+                Tx.ModeSelect_Bar = new Texture[Menu.MenuCount + 1];
+                Tx.ModeSelect_Bar_Chara = new Texture[Menu.MenuCount];
+                Tx.ModeSelect_Bar_Text = new Texture[Menu.MenuCount];
+                Tx.ModeSelect_Bar_EpText = new Texture[Menu.MenuCount];
+
+                for (int i = 0; i < Menu.MenuCount; i++)
+                {
+                    if (Directory.Exists(mode))
+                    {
+                        string box = $@"{mode}{Menu.GetBoxName(i)}\";
+                        Tx.ModeSelect_Bar[i] = new(@$"{box}Bar.png");
+                        Tx.ModeSelect_Bar_Chara[i] = new(@$"{box}Chara.png");
+                        Tx.ModeSelect_Bar_Text[i] = new(@$"{box}Text.png");
+                        Tx.ModeSelect_Bar_EpText[i] = new(@$"{box}EpText.png");
+
+                        Tx.ModeSelect_Bar[Menu.MenuCount] = new(@$"{mode}Bar_White.png");
+                        Tx.ModeSelect_Bar_Flash = new(@$"{mode}Bar_Flash.png");
+                        Tx.ModeSelect_Bar_Frame[0] = new(@$"{mode}WhiteFrame.png");
+                        Tx.ModeSelect_Bar_Frame[1] = new(@$"{mode}YellowFrame.png");
+                        Tx.ModeSelect_Bar_Frame[2] = new(@$"{mode}YellowFrameBack.png");
+                    }
+                    else
+                    {
+                        Tx.ModeSelect_Bar[i] = new(@$"{title}ModeSelect_Bar_{i.ToString()}.png");
+                        Tx.ModeSelect_Bar_Chara[i] = new(@$"{title}ModeSelect_Bar_Chara_{i.ToString()}.png");
+
+                        Tx.ModeSelect_Bar[Menu.MenuCount] = new(@$"{title}ModeSelect_Bar_Overlay.png");
+                    }
+                }
+
+                #endregion
+
+                #region SongSelect
+                Tx.SongSelect_BG = new($@"{song}Background.png");
+                Tx.SongSelect_GenreBG = new Texture[Count($@"{song}Genre_Background\GenreBackground_")];
+                for (int i = 0; i < Tx.SongSelect_GenreBG.Length; i++)
+                {
+                    Tx.SongSelect_GenreBG[i] = new($@"{song}Genre_Background\GenreBackground_{i.ToString()}.png");
+                }
+                Tx.SongSelect_GenreBar = new Texture[Count($@"{song}Bar_Genre\Bar_Genre_")];
+                for (int i = 0; i < Tx.SongSelect_GenreBar.Length; i++)
+                {
+                    Tx.SongSelect_GenreBar[i] = new($@"{song}Bar_Genre\Bar_Genre_{i.ToString()}.png");
+                }
+                Tx.SongSelect_Bar_Overlay = new($@"{song}Bar_Genre_Overlay.png");
+                #endregion
+
+                #region NamePlate
+                Tx.NamePlate = new($@"{root}NamePlate.png");
+
+                #endregion
+
+
+                root = SoundRoot;
+                string bgm = $@"{root}BGM\";
+
+                Sfx.Don = new($@"{root}Taiko\0\dong.ogg");
+                Sfx.Ka = new($@"{root}Taiko\0\ka.ogg");
+                Sfx.Decide = new($@"{root}Decide.ogg");
+                if (!Sfx.Decide.Enable) Sfx.Decide = Sfx.Don;
+                Sfx.Change = new($@"{root}Change.ogg");
+                if (!Sfx.Change.Enable) Sfx.Change = Sfx.Ka;
+                Sfx.Error = new($@"{root}Error.ogg");
+
+                Sfx.Entry_BGM = new($@"{bgm}Title.ogg");
+                Sfx.Entry_BGM_In = new($@"{bgm}Title_Start.ogg");
+                Sfx.Entry_Wait = new($@"{root}Entry.ogg");
+                Sfx.Entry_Side = new($@"{root}SelectSide.ogg");
+                Sfx.Card = new($@"{root}Banapas.ogg");
+                if (!Sfx.Card.Enable) Sfx.Card = new($@"{root}CardSuccess.ogg");//
+                Sfx.Join[0] = new($@"{root}Join.ogg");
+                Sfx.Join[1] = new($@"{root}Join_2P.ogg");
+
+                Sfx.SongSelect_BGM = new($@"{bgm}SongSelect.ogg");
+                Sfx.SongSelect_BGM_In = new($@"{bgm}SongSelect_Start.ogg");
+
+                var conf = new Settings($"{Root}SkinConfig.ini");
+
+
+                Sfx.Mode = new Sound[Menu.MenuCount];
+                for (int i = 0; i < Menu.MenuCount; i++)
+                {
+                    Sfx.Mode[i] = new($@"{root}Entry\{Menu.GetBoxName(i)}.ogg");
+                }
+                LoadStatus = ELoadState.Success;
             }
-
-            #endregion
-
-            #region SongSelect
-            Tx.SongSelect_BG = new($@"{song}Background.png");
-            Tx.SongSelect_GenreBG = new Texture[Count($@"{song}Genre_Background\GenreBackground_")];
-            for (int i = 0; i < Tx.SongSelect_GenreBG.Length; i++)
+            catch (Exception)
             {
-                Tx.SongSelect_GenreBG[i] = new($@"{song}Genre_Background\GenreBackground_{i.ToString()}.png");
-            }
-            Tx.SongSelect_GenreBar = new Texture[Count($@"{song}Bar_Genre\Bar_Genre_")];
-            for (int i = 0; i < Tx.SongSelect_GenreBar.Length; i++)
-            {
-                Tx.SongSelect_GenreBar[i] = new($@"{song}Bar_Genre\Bar_Genre_{i.ToString()}.png");
-            }
-            Tx.SongSelect_Bar_Overlay = new($@"{song}Bar_Genre_Overlay.png");
-            #endregion
-
-            #region NamePlate
-            Tx.NamePlate = new($@"{root}NamePlate.png");
-
-            #endregion
-
-
-            root = SoundRoot;
-            string bgm = $@"{root}BGM\";
-
-            Sfx.Don = new($@"{root}Taiko\0\dong.ogg");
-            Sfx.Ka = new($@"{root}Taiko\0\ka.ogg");
-            Sfx.Decide = new($@"{root}Decide.ogg");
-            if (!Sfx.Decide.Enable) Sfx.Decide = Sfx.Don;
-            Sfx.Change = new($@"{root}Change.ogg");
-            if (!Sfx.Change.Enable) Sfx.Change = Sfx.Ka;
-            Sfx.Error = new($@"{root}Error.ogg");
-
-            Sfx.Entry_BGM = new($@"{bgm}Title.ogg");
-            Sfx.Entry_BGM_In = new($@"{bgm}Title_Start.ogg");
-            Sfx.Entry_Wait = new($@"{root}Entry.ogg");
-            Sfx.Entry_Side = new($@"{root}SelectSide.ogg");
-            Sfx.Card = new($@"{root}Banapas.ogg");
-            if (!Sfx.Card.Enable) Sfx.Card = new($@"{root}CardSuccess.ogg");//
-            Sfx.Join[0] = new($@"{root}Join.ogg");
-            Sfx.Join[1] = new($@"{root}Join_2P.ogg");
-
-            Sfx.SongSelect_BGM = new($@"{bgm}SongSelect.ogg");
-            Sfx.SongSelect_BGM_In = new($@"{bgm}SongSelect_Start.ogg");
-
-            var conf = new Settings($"{Root}SkinConfig.ini");
-
-
-            Sfx.Mode = new Sound[Menu.MenuCount];
-            for (int i = 0; i < Menu.MenuCount; i++)
-            {
-                Sfx.Mode[i] = new($@"{root}Entry\{Menu.GetBoxName(i)}.ogg");
+                LoadStatus = ELoadState.Error;
             }
         }
 

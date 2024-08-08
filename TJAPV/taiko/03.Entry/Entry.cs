@@ -20,20 +20,10 @@ namespace TJAPlayerV.taiko
         public override void Enable()
         {
             ModeSelect.Init();
-            Skin.Load();
-            Language.Load();
             Menu.Init();
             Entry_BGM_In.Play();
             CoinIn.Start();
-            QuickStart();
             base.Enable();
-        }
-
-        public static void QuickStart()
-        {
-            ModeSelect.IsEnable = true;
-            ModeSelect.BarAnimeIn.Start();
-            ModeSelect.CharaIn.Start();
         }
 
         public override void Disable()
