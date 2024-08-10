@@ -5,6 +5,7 @@ namespace Loader
         public string Title = "";
         public string SubTitle = "";
         public string Wave = "";
+        public string Genre = "";
         public double Offset = 0;
         public double BPM = 120;
 
@@ -37,11 +38,14 @@ namespace Loader
                             break;
                         case "offset":
                             if (float.TryParse(value, out float fval)) Offset = fval;
-                                else double.TryParse(value, out Offset);
+                            else double.TryParse(value, out Offset);
                             break;
                         case "bpm":
                             if (float.TryParse(value, out fval)) BPM = fval;
                             else double.TryParse(value, out BPM);
+                            break;
+                        case "genre":
+                            Genre = value;
                             break;
                     }
                 }
@@ -51,7 +55,7 @@ namespace Loader
 
         public override string ToString()
         {
-            return $"{Title}\n{SubTitle}\n{Wave}";
+            return $"{Title}\n{SubTitle}\n{Wave}\n{Genre}";
         }
     }
 }

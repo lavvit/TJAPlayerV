@@ -100,6 +100,7 @@ namespace TJAPlayerV.taiko
                 {
                     Tx.SongSelect_GenreBar[i] = new($@"{song}Bar_Genre\Bar_Genre_{i.ToString()}.png");
                 }
+                Tx.SongSelect_Bar_Back = new($@"{song}Bar_Genre_Back.png");
                 Tx.SongSelect_Bar_Overlay = new($@"{song}Bar_Genre_Overlay.png");
                 #endregion
 
@@ -570,7 +571,7 @@ namespace TJAPlayerV.taiko
         #region SongSelect
         public static Texture
             SongSelect_BG = new(),
-            SongSelect_Bar = new(),
+            SongSelect_Bar_Back = new(),
             SongSelect_Bar_Overlay = new()
 
             ;

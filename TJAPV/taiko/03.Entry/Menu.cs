@@ -399,7 +399,7 @@ namespace TJAPlayerV.taiko
             }
             else Drawing.Text(Skin.ModeSelect_Bar_Center_Title[0] + (Skin.ModeSelect_Bar_Center_Move_X * BarAnimeCount),
                 Skin.ModeSelect_Bar_Center_Title[1] - (Skin.ModeSelect_Bar_Center_Move * BarAnimeCount),
-                Name, ttkTitle.Col, ttkTitle.Handle, ttkTitle.ECol, false, ReferencePoint.BottomCenter,
+                Name, ttkTitle.Col, ttkTitle.Handle, ttkTitle.ECol, ReferencePoint.BottomCenter,
                 BarAnimeCount);
 
             if (barEp != null && barEp.Enable)
@@ -413,7 +413,7 @@ namespace TJAPlayerV.taiko
             else if (ttkBoxText != null)
             {
                 Drawing.Text(Skin.ModeSelect_Bar_Center_BoxText[0], Skin.ModeSelect_Bar_Center_BoxText[1],
-                Description, ttkBoxText.Col, ttkBoxText.Handle, ttkBoxText.ECol, false, ReferencePoint.Center,
+                Description, ttkBoxText.Col, ttkBoxText.Handle, ttkBoxText.ECol, ReferencePoint.Center,
                 BarAnimeCount);
             }
         }
@@ -464,7 +464,7 @@ namespace TJAPlayerV.taiko
                 barText.Draw(x + 321, y + 54 + ModeSelect_Bar[Menu.MenuCount].Height / 1.5);
             }
             else Drawing.Text(x + Skin.ModeSelect_Title_Offset[0], y + Skin.ModeSelect_Title_Offset[1],
-                Name, ttkTitle.Col, ttkTitle.Handle, ttkTitle.ECol, false, ReferencePoint.BottomCenter);
+                Name, ttkTitle.Col, ttkTitle.Handle, ttkTitle.ECol, ReferencePoint.BottomCenter);
 
             //stageSongSelect.actSongList.ResolveTitleTexture(ttkTitle, Skin.VerticalText)?.t2D中心基準描画(pos.X + BarAnimeX - BarMoveX + Skin.ModeSelect_Offset[0], pos.Y + BarAnimeY - BarMoveY + Skin.ModeSelect_Offset[1]);
         }

@@ -1,5 +1,4 @@
 using SeaDrop;
-using System.Drawing;
 using static TJAPlayerV.taiko.Skin;
 
 namespace TJAPlayerV.taiko
@@ -12,6 +11,7 @@ namespace TJAPlayerV.taiko
         public static int Cursor;
         public static string NowFolder = "";
         public static Counter BoxOpen = new();
+        public static Counter BarOpen = new();
         public static Handle BarHandle = new();
         public static Handle BoxHandle = new();
 
@@ -19,9 +19,20 @@ namespace TJAPlayerV.taiko
         {
             get
             {
-                if (Cursor > 0 && Cursor < SongList.Count)
+                if (Cursor >= 0 && Cursor < SongList.Count)
                     return SongList[Cursor].Song;
                 else return new Song();
+            }
+        }
+        public static string? BackFolder
+        {
+            get
+            {
+                if (SongList.Count > 0 && SongList[0].Song.Type == ESongType.Back)
+                {
+                    return SongList[0].Song.Directory;
+                }
+                return null;
             }
         }
 
@@ -32,11 +43,15 @@ namespace TJAPlayerV.taiko
             for (int i = 0; i < NowList.Length; i++)
             {
                 var song = NowList[i];
-                song.Draw(SongSelect_Bar_X[i], SongSelect_Bar_Y[i], 0, 0, i == NowList.Length / 2, i == Cursor);//
+
+                float BarAnimeCount = BarOpen.Value <= 200 ? 0 : (float)Math.Sin((BarOpen.Value - 200) * 1.5f * (Math.PI / 180));
+                int centerMove = (int)(BarAnimeCount * SongSelect_Bar_Center_Move);
+                int centerMoveX = (int)(BarAnimeCount * SongSelect_Bar_Center_Move_X);
+                song?.Draw(SongSelect_Bar_X[i], SongSelect_Bar_Y[i], 0, 0, i == NowList.Length / 2, i == Cursor);//
             }
         }
 
-        public static void Load(string root = "")
+        public static void Load(string root = "", string cursor = "")
         {
             Cursor = 0;
             NowList = new SongBar[SongSelect_Bar_Count];
@@ -47,6 +62,31 @@ namespace TJAPlayerV.taiko
             BarHandle = new Handle(fontpath, ModeSelect_Title_Scale[0], 1, 6, false, EFontType.AntialiasingEdge);
             BoxHandle = new Handle(fontpath, ModeSelect_Title_Scale[1], 1, 4, false, EFontType.AntialiasingEdge);
 
+            if (!string.IsNullOrEmpty(root))
+            {
+                var rsong = Songs.SongList.Find(s => s.Path == root);
+                if (rsong != null)
+                {
+                    Song song = new()
+                    {
+                        Path = rsong.Path,
+                        Name = rsong.Name,
+                        Directory = rsong.Directory,
+                        Type = ESongType.Back,
+                    };
+                    SongBar bar = new()
+                    {
+                        Song = song,
+                        BarTexture = Tx.SongSelect_Bar_Back,
+                        Title = song.Name,
+                        Description = $"Back to u{song.Directory}v",
+                        Handle = BarHandle,
+                        DescHandle = BoxHandle,
+                        Overlay = false,
+                    };
+                    SongList.Add(bar);
+                }
+            }
 
             foreach (var song in Songs.SongList)
             {
@@ -57,7 +97,7 @@ namespace TJAPlayerV.taiko
                         SongBar bar = new()
                         {
                             Song = song,
-                            BarTexture = Tx.SongSelect_GenreBar[0],
+                            BarTexture = Tx.SongSelect_GenreBar[Songs.GenreNum(Songs.GenreName(song.Genre))],
                             Title = song.TJA.Header.Title,
                             Description = "",
                             Handle = BarHandle,
@@ -71,17 +111,25 @@ namespace TJAPlayerV.taiko
                         SongBar bar = new()
                         {
                             Song = song,
-                            BarTexture = Tx.SongSelect_GenreBar[0],
+                            BarTexture = Tx.SongSelect_GenreBar[Songs.GenreNum(Songs.GenreName(song.Genre))],
                             Title = song.Name,
                             Description = $"{song.Folder.Count} Files",
                             Handle = BarHandle,
                             DescHandle = BoxHandle,
                             Overlay = true,
                         };
+                        if (cursor != "" && song.Path == cursor) Cursor = SongList.Count;
                         SongList.Add(bar);
                     }
                 }
             }
+            SongList.Sort((a, b) =>
+            {
+                int r = Songs.RootDirNum(a.Song.Path) - Songs.RootDirNum(b.Song.Path);
+                int t = r != 0 ? r : a.Song.Type - b.Song.Type;
+                return t != 0 ? t : new NaturalComparer().Compare(a.Song.Path, b.Song.Path);
+            });
+
             Set();
 
             NowFolder = root;
@@ -143,6 +191,18 @@ namespace TJAPlayerV.taiko
                 return list[list.Count - 1];
 
             return list[index - 1];
+        }
+
+        public static bool Back()
+        {
+            string from = NowFolder;
+            var back = BackFolder;
+            if (back != null)
+            {
+                Load(back, from);
+                return true;
+            }
+            else return false;
         }
     }
 
@@ -207,7 +267,7 @@ namespace TJAPlayerV.taiko
                     texture.SetRectangle(width, 0, width, height);
                     texture.Draw(barx, bary);
 
-                    texture.XYScale = (1.0 + ((movex / (double)width) * 2.0) * anime, 1.0 + ((movex / (double)height) * 2.0));
+                    texture.XYScale = (1.0 + ((movex / (double)width) * 2.0) * anime, 1.0 + ((movey / (double)height) * 2.0));
                     texture.SetRectangle(width, height, width, height);
                     texture.Draw(barx, bary + height * 1);
 
@@ -221,7 +281,7 @@ namespace TJAPlayerV.taiko
                     texture.SetRectangle(width * 2, 0, width, height);
                     texture.Draw(barx, bary);
 
-                    texture.XYScale = (1.0 * anime, 1.0 + ((movex / (double)height) * 2.0));
+                    texture.XYScale = (1.0 * anime, 1.0 + ((movey / (double)height) * 2.0));
                     texture.SetRectangle(width * 2, height, width, height);
                     texture.Draw(barx, bary + height * 1);
 
@@ -245,7 +305,7 @@ namespace TJAPlayerV.taiko
                     overlay.SetRectangle(0, 0, width, height);
                     overlay.Draw(barx, bary);
 
-                    overlay.XYScale = (1.0 * anime, 1.0 + ((movex / (double)height) * size));
+                    overlay.XYScale = (1.0 * anime, 1.0 + ((movey / (double)height) * size));
                     overlay.SetRectangle(0, height, width, height);
                     overlay.Draw(barx, bary + height * 1);
 
@@ -259,7 +319,7 @@ namespace TJAPlayerV.taiko
                     overlay.SetRectangle(width, 0, width, height);
                     overlay.Draw(barx, bary);
 
-                    overlay.XYScale = (1.0 + ((movex / (double)width) * 2.0) * anime, 1.0 + ((movex / (double)height) * size));
+                    overlay.XYScale = (1.0 + ((movex / (double)width) * 2.0) * anime, 1.0 + ((movey / (double)height) * size));
                     overlay.SetRectangle(width, height, width, height);
                     overlay.Draw(barx, bary + height * 1);
 
@@ -273,7 +333,7 @@ namespace TJAPlayerV.taiko
                     overlay.SetRectangle(width * 2, 0, width, height);
                     overlay.Draw(barx, bary);
 
-                    overlay.XYScale = (1.0 * anime, 1.0 + ((movex / (double)height) * size));
+                    overlay.XYScale = (1.0 * anime, 1.0 + ((movey / (double)height) * size));
                     overlay.SetRectangle(width * 2, height, width, height);
                     overlay.Draw(barx, bary + height * 1);
 
@@ -283,16 +343,16 @@ namespace TJAPlayerV.taiko
 
                     overlay.XYScale = null;
                     overlay.Rectangle = null;
-
-                    barx = x + (offset / 2) + moveoffset - movex + width;
-                    bary = y - movey + height;
-                    Drawing.Text(barx, bary, Title, Handle, 0xffffff, 0, false, point);
-                    Drawing.Text(barx, bary + offset, Description, DescHandle, 0xffffff, 0, false, point);
                 }
 
-                if (cursor)
+                double toffset = (texture.Width / 3.0) * (1.0 - anime);
+                barx = x + (toffset / 2) + moveoffset - movex + width;
+                bary = y - movey + height;
+                Drawing.Text(barx, bary, Title, Handle, 0xffffff, 0, false, point);
+                Drawing.Text(barx, bary + toffset, Description, DescHandle, 0xffffff, 0, false, point);
+                /*if (cursor)
                 {
-                    var curtex = Tx.SongSelect_Bar;
+                    var curtex = Tx.SongSelect_Bar*Ov;
                     double offset = (texture.Width / 3.0) * (1.0 - anime);
 
                     barx = x + (offset * 1.5) + moveoffset - movex;
@@ -340,7 +400,7 @@ namespace TJAPlayerV.taiko
 
                     curtex.XYScale = null;
                     curtex.Rectangle = null;
-                }
+                }*/
             }
             else
             {
@@ -454,10 +514,10 @@ namespace TJAPlayerV.taiko
 
                     overlay.XYScale = null;
                     overlay.Rectangle = null;
-
-                    barx = x + (offset / 2) + moveoffset - movex + width;
-                    bary = y - movey + height;
                 }
+                double toffset = (texture.Width / 3.0) * (1.0 - anime);
+                barx = x + (toffset / 2) + moveoffset - movex + width;
+                bary = y - movey + height;
                 Drawing.Text(barx, bary, Title, Handle, 0xffffff, 0, false, point);
             }
         }

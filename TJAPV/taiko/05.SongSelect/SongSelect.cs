@@ -75,22 +75,24 @@ namespace TJAPlayerV.taiko
                 {
                     SongBars.Load(song.Path);
                     Sfx.Decide.Play();
+                    SongBars.BoxOpen.Reset();
+                    SongBars.BoxOpen.Start();
+                }
+                if (song.Type == ESongType.Back)
+                {
+                    SongBars.Back();
+                    Sfx.Decide.Play();
                 }
             }
             if (Key.IsPushed(EKey.Esc))
             {
-                var song = SongBars.NowSong;
-                if (SongBars.NowFolder != "")
-                {
-                    SongBars.Load(song.Directory);
-                    Sfx.Change.Play();
-                }
-                else DXLib.End();
+                if (!SongBars.Back()) DXLib.End();
+                Sfx.Change.Play();
             }
-            if (Key.IsPushed(EKey.Enter))
+            if (Key.IsPushed(EKey.F5))
             {
-                SongBars.BoxOpen.Reset();
-                SongBars.BoxOpen.Start();
+                Songs.Load();
+                SongBars.Load();
             }
             base.Update();
         }
