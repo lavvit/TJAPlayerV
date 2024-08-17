@@ -9,8 +9,8 @@ namespace Loader
         public int Course = 3;
         public bool IsAuto = true;
         public int StartMeasure = 0;
-        public double StartTime = -2000;
-        public static Counter Timer = new(-2000, int.MaxValue);
+        public double StartTime = -1000;
+        public static Counter Timer = new(-1000, int.MaxValue);
 
         public Lane() { }
         public Lane(string path, int course = 3)
@@ -36,7 +36,11 @@ namespace Loader
                 taiko.Tx.Notes.ReferencePoint = ReferencePoint.Center;
                 taiko.Tx.Notes.Draw(defx, defy);
             }
-            else Drawing.Circle(defx, defy, 32, 0xc0c0c0, false, 2);
+            else
+            {
+                Drawing.Circle(defx, defy, 32, 0xc0c0c0, false, 2);
+                Drawing.Circle(defx, defy, 44, 0xc0c0c0, false, 2);
+            }
             if (TJA == null || TJA.Courses[Course] == null) return;
             for (int i = TJA.Courses[Course].Lanes[0].Length - 1; i >= 0; i--)
             {
@@ -46,10 +50,14 @@ namespace Loader
                     taiko.Tx.Bar.ReferencePoint = ReferencePoint.Center;
                     taiko.Tx.Bar.Draw(defx + NoteX(bar), defy);
                 }
+                else
+                {
+                    Drawing.Box(defx + NoteX(bar) - 1, defy - size / 2, 3, size);
+                }
                 for (int j = bar.Chips.Count - 1; j >= 0; j--)
                 {
                     var chip = bar.Chips[j];
-                    if (!chip.Hit)
+                    if (!chip.Hit && chip.Type > ENote.None)
                         DrawNote(defx, defy, chip);
                 }
             }
@@ -58,7 +66,23 @@ namespace Loader
         public void DrawNote(double x, double y, Chip note)
         {
             int size = taiko.Tx.Notes.Enable ? taiko.Tx.Notes.Height / 4 : DXLib.Height;
+            int[] defsize = [32, 44];
             int[] color = [0xe7372a, 0x4ecdbe, 0xecb907, 0xff5000, 0xcc245e];
+
+            double notex = x + NoteX(note);
+            double notey = y;
+            if (notex > DXLib.Width + size || notex < -size)
+            {
+                if (note.LongEnd != null)
+                {
+                    double endx = x + NoteX(note.LongEnd);
+                    double endy = y;
+                    if ((notex > DXLib.Width + size && endx > DXLib.Width + size) || (notey < -size && endy < -size))
+                        return;
+                }
+                else return;
+            }
+
             switch (note.Type)
             {
                 case ENote.Don:
@@ -69,11 +93,15 @@ namespace Loader
                     {
                         taiko.Tx.Notes.SetRectangle(size * (int)note.Type, 0, size, size);
                         taiko.Tx.Notes.ReferencePoint = ReferencePoint.Center;
-                        taiko.Tx.Notes.Draw(x + NoteX(note), y);
+                        taiko.Tx.Notes.Draw(notex, notey);
                     }
                     else
                     {
-                        Drawing.Circle(x + NoteX(note), y, note.Type >= ENote.DON ? 44 : 32, (int)note.Type % 2 == (int)ENote.Don ? color[0] : color[1], false, 2);
+                        int ed = note.Type >= ENote.DON ? 8 : 6;
+                        int sz = defsize[note.Type >= ENote.DON ? 1 : 0];
+                        Drawing.Circle(notex, notey, sz);
+                        Drawing.Circle(notex, notey, sz, 0, false, 2);
+                        Drawing.Circle(notex, notey, sz - ed, (int)note.Type % 2 == (int)ENote.Don ? color[0] : color[1]);
                     }
                     break;
                 case ENote.Roll:
@@ -87,9 +115,9 @@ namespace Loader
                             double endy = y;
 
                             taiko.Tx.Notes.SetRectangle(size * (rec + 1), 0, size, size);
-                            taiko.Tx.Notes.XYScale = ((endx - (x + NoteX(note))) / size, 1.0);
+                            taiko.Tx.Notes.XYScale = ((endx - (notex)) / size, 1.0);
                             taiko.Tx.Notes.ReferencePoint = ReferencePoint.CenterLeft;
-                            taiko.Tx.Notes.Draw(x + NoteX(note), y);
+                            taiko.Tx.Notes.Draw(notex, notey);
                             taiko.Tx.Notes.XYScale = null;
 
                             taiko.Tx.Notes.SetRectangle(size * (rec + 2), 0, size, size);
@@ -98,19 +126,31 @@ namespace Loader
                         }
                         taiko.Tx.Notes.SetRectangle(size * rec, 0, size, size);
                         taiko.Tx.Notes.ReferencePoint = ReferencePoint.Center;
-                        taiko.Tx.Notes.Draw(x + NoteX(note), y);
+                        taiko.Tx.Notes.Draw(notex, notey);
                     }
                     else
                     {
+                        int sz = defsize[note.Type >= ENote.ROLL ? 1 : 0];
+                        int ed = note.Type >= ENote.ROLL ? 8 : 6;
                         if (note.LongEnd != null)
                         {
                             double endx = x + NoteX(note.LongEnd);
                             double endy = y;
 
-                            Drawing.BoxZ(x, y - size / 2, endx, endy + size / 2, 0xc0c0c0);
-                            Drawing.Circle(x + NoteX(note), y, 32, 0xc0c0c0, false, 2);
+                            Drawing.Circle(endx, endy, sz);
+                            Drawing.Circle(endx, endy, sz, 0, false, 2);
+                            Drawing.Circle(endx, endy, sz - ed, color[2]);
+                            double x1 = notex;
+                            double y1 = y - sz;
+                            double x2 = endx;
+                            double y2 = endy + sz;
+                            Drawing.BoxZ(x1, y1 - 1, x2, y2 + 2, 0);
+                            Drawing.BoxZ(x1, y1 + 1, x2, y2 - 0);
+                            Drawing.BoxZ(x1, y1 + ed, x2, y2 - ed + 1, color[2]);
                         }
-                        Drawing.Circle(x + NoteX(note), y, note.Type >= ENote.ROLL ? 44 : 32, color[2], false, 2);
+                        Drawing.Circle(notex, notey, sz);
+                        Drawing.Circle(notex, notey, sz, 0, false, 2);
+                        Drawing.Circle(notex, notey, sz - ed, color[2]);
                     }
                     break;
                 case ENote.Balloon:
@@ -118,8 +158,8 @@ namespace Loader
                     if (taiko.Tx.Notes.Enable)
                     {
                         int rec = note.Type == ENote.Potato ? 13 : 11;
-                        double balloonx = x + NoteX(note);
-                        double balloony = y;
+                        double balloonx = notex;
+                        double balloony = notey;
                         if (note.LongEnd != null)
                         {
                             double endx = x + NoteX(note.LongEnd);
@@ -143,8 +183,10 @@ namespace Loader
                     }
                     else
                     {
-                        double balloonx = x + NoteX(note);
-                        double balloony = y;
+                        int sz = defsize[note.Type >= ENote.Potato ? 1 : 0];
+                        int ed = note.Type >= ENote.Potato ? 8 : 6;
+                        double balloonx = notex;
+                        double balloony = notey;
                         if (note.LongEnd != null)
                         {
                             double endx = x + NoteX(note.LongEnd);
@@ -159,8 +201,31 @@ namespace Loader
                                 balloonx = x;
                                 balloony = y;
                             }
+                            Drawing.Circle(endx, endy, sz, color[3], false, 2, 0.5);
+                            double x1 = notex;
+                            double y1 = y - sz;
+                            double x2 = endx;
+                            double y2 = endy + sz;
+                            Drawing.BoxZ(x1, y1, x2, y2 + 1, color[3], false, 2, 0.5);
                         }
-                        Drawing.Circle(balloonx, balloony, note.Type >= ENote.Potato ? 44 : 32, note.Type >= ENote.Potato ? color[4] : color[3], false, 2);
+
+                        double objx = balloonx + sz * 2;
+                        double objy = balloony;
+
+                        Drawing.Circle(objx, objy, sz / 2);
+                        Drawing.Circle(objx, objy, sz / 2, 0, false, 2);
+                        Drawing.Circle(objx, objy, sz / 2 - ed / 2, color[2]);
+                        double ox1 = balloonx;
+                        double oy1 = balloony - sz / 2;
+                        double ox2 = objx;
+                        double oy2 = objy + sz / 2;
+                        Drawing.BoxZ(ox1, oy1 - 1, ox2, oy2 + 2, 0);
+                        Drawing.BoxZ(ox1, oy1 + 1, ox2, oy2 - 0);
+                        Drawing.BoxZ(ox1, oy1 + ed, ox2, oy2 - ed / 2 + 1, color[2]);
+
+                        Drawing.Circle(balloonx, balloony, sz);
+                        Drawing.Circle(balloonx, balloony, sz, 0, false, 2);
+                        Drawing.Circle(balloonx, balloony, sz - ed, note.Type >= ENote.Potato ? color[4] : color[3]);
                     }
                     break;
             }

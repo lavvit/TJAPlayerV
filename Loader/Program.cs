@@ -82,19 +82,21 @@ namespace Loader
                 {
                     if (Lane.Timer.Value > Lane.TJA.Length || Key.IsPushing(EKey.LShift))
                     {
+                        if (Sound.Enable) Sound.Stop();
+                        Lane.Timer.Stop();
                         Reset();
                     }
-                    if (Lane.Timer.State > 0)
+                    else if (Lane.Timer.State > 0)
                     {
                         if (Sound.Enable) Sound.Stop();
                         Lane.Timer.Stop();
                     }
                     else
                     {
-                        if (Sound.Enable && Lane.Timer.Value >= Lane.TJA.Header.Offset * 1000.0)
+                        if (Sound.Enable && Lane.Timer.Value >= 0)
                         {
                             Sound.Play();
-                            Sound.Time = (int)(Lane.Timer.Value - Lane.TJA.Header.Offset * 1000.0);
+                            Sound.Time = (int)(Lane.Timer.Value);
                         }
                         Lane.Timer.Start();
                     }
@@ -119,7 +121,7 @@ namespace Loader
                 }
 
                 if (Sound.Enable && Lane.Timer.State > 0 &&
-                    Lane.Timer.Value >= Lane.TJA.Header.Offset * 1000.0 && Lane.Timer.Value + 50 < Lane.TJA.Length + Lane.TJA.Header.Offset * 1000.0)
+                    Lane.Timer.Value >= 0 && Lane.Timer.Value + 100 < Lane.TJA.Length)
                 {
                     Sound.PlayLoopUp();
                 }

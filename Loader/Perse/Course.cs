@@ -51,33 +51,36 @@ namespace Loader
                         if (note >= '0' && note <= '9')
                         {
                             n++;
-                            Chip chip = new Chip()
+                            if (b < lane.Length)
                             {
-                                Type = (ENote)int.Parse(note.ToString()),
-                                Position = n,
-                                Bar = b + 1,
-                            };
-                            if (lane[b] == null) lane[b] = new Bar();
-                            lane[b].Chips.Add(chip);
-                            if (note == '8')
-                            {
-                                if (longs.Count > 0)
+                                Chip chip = new Chip()
                                 {
-                                    var end = longs[longs.Count - 1];
-                                    lane[end.line].Chips[end.pos - 1].LongEnd = new Chip()
+                                    Type = (ENote)int.Parse(note.ToString()),
+                                    Position = n,
+                                    Bar = b + 1,
+                                };
+                                if (lane[b] == null) lane[b] = new Bar();
+                                lane[b].Chips.Add(chip);
+                                if (note == '8')
+                                {
+                                    if (longs.Count > 0)
                                     {
-                                        Type = lane[end.line].Chips[end.pos - 1].Type,
-                                        Position = n,
-                                        Bar = b + 1,
-                                    };
+                                        var end = longs[longs.Count - 1];
+                                        lane[end.line].Chips[end.pos - 1].LongEnd = new Chip()
+                                        {
+                                            Type = lane[end.line].Chips[end.pos - 1].Type,
+                                            Position = n,
+                                            Bar = b + 1,
+                                        };
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                if (note >= '5')
+                                else
                                 {
-                                    longs.Add((b, n));
-                                    LongList[0].Add((b, n));
+                                    if (note >= '5')
+                                    {
+                                        longs.Add((b, n));
+                                        LongList[0].Add((b, n));
+                                    }
                                 }
                             }
 
@@ -125,7 +128,7 @@ namespace Loader
         public void Set()
         {
             var lane = Lanes[0];
-            double t = -Head.Offset;
+            double t = -Head.Offset * 1000.0;
 
             double bpm = Head.BPM;
             double scroll = 1;
