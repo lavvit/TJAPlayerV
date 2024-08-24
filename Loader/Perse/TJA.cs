@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Loader
 {
-    public class TJA
+    public class TJA : IDisposable
     {
         public string FilePath = "";
         public string SoundPath = "";
@@ -13,6 +13,27 @@ namespace Loader
         public Course[] Courses = new Course[5];
 
         public int Length;
+
+        ~TJA() { Dispose(); }
+        public void Dispose()
+        {
+            Enable = false;
+            Header = new();
+            for (int i = 0; i < Courses.Length; i++)
+            {
+                if (Courses[i] == null) continue;
+                for (int j = 0; j < Courses[i].LongList.Length; j++)
+                    Courses[i].LongList[j].Clear();
+                Courses[i].Texts.Clear();
+                for (int j = 0; j < Courses[i].Lanes.Length; j++)
+                    for (int k = 0; k < Courses[i].Lanes[j].Length; k++)
+                    {
+                        Courses[i].Lanes[j][k].Chips.Clear();
+                        Courses[i].Lanes[j][k].Commands.Clear();
+                    }
+            }
+            Courses = new Course[5];
+        }
 
         public TJA(string path)
         {
@@ -89,7 +110,10 @@ namespace Loader
 
         public void SetLen()
         {
-            Length = Sound.GetLength(SoundPath);
+            using (Sound sound = new(SoundPath))
+            {
+                Length = sound.Length;
+            }
         }
 
         public override string ToString()

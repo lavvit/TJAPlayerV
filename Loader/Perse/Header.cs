@@ -8,6 +8,7 @@ namespace Loader
         public string Genre = "";
         public double Offset = 0;
         public double BPM = 120;
+        public double Demo = 0;
 
         public Header() { }
 
@@ -46,6 +47,10 @@ namespace Loader
                             break;
                         case "genre":
                             Genre = value;
+                            break;
+                        case "demostart":
+                            if (float.TryParse(value, out fval)) Demo = fval;
+                            else double.TryParse(value, out Demo);
                             break;
                     }
                 }
