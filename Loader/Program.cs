@@ -38,7 +38,7 @@ namespace Loader
             Lane.Draw(0, 0);
             Drawing.Text(2, 2, $"{Lane.Timer.Value}" + (Lane.TJA != null ? $"/{Lane.TJA.Length}" : ""));
             Drawing.Text(160, 2, $"{Lane.NowMeasure()}/{Lane.AllMeasure()} {Lane.NowMeasureText()}");
-            Drawing.Text(DXLib.Width - 130, 2, Lane.TJA != null ? Lane.TJA.Header.Title : "", null, 0xffffff, 0, false, ReferencePoint.TopRight);
+            Drawing.Text(DXLib.Width - 130, 2, Lane.TJA != null ? Lane.TJA.Header.Title : "", null, 0xffffff, 0, 1, ReferencePoint.TopRight);
             Drawing.Text(DXLib.Width - 120, 2, Lane.TJA != null ? (ECourse)Lane.Course : "", Course.GetCourseColor((ECourse)Lane.Course));
             Drawing.Text(DXLib.Width - 60, 2, FPS.AverageValue, 0x00ff00);
             //Drawing.Text(20, 20, Lane.TJA);

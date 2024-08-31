@@ -211,6 +211,7 @@ namespace Loader
         public double GetTime(Bar bar, int current)
         {
             double t = 0;
+            double bpm = bar.BPM;
             double measurelength = 240000.0 / bar.BPM / bar.Measure;
             if (bar.Chips.Count == 0) return measurelength;
             for (int i = 0; i < current; i++)
@@ -226,6 +227,10 @@ namespace Loader
                         string value = string.Join(" ", spls).Trim();
                         switch (split[0].ToLower())
                         {
+                            case "bpmchange":
+                                if (float.TryParse(value, out float fbpm)) bpm = fbpm;
+                                else double.TryParse(value, out bpm);
+                                break;
                             case "delay":
                                 if (float.TryParse(value, out float fdel)) t += fdel * 1000.0;
                                 else if (double.TryParse(value, out double ddel)) t += ddel * 1000.0;
@@ -235,7 +240,7 @@ namespace Loader
                 }
                 #endregion
                 var chip = bar.Chips[i];
-                t += 240000.0 / bar.BPM / bar.Measure / bar.NoteCount;
+                t += 240000.0 / bpm / bar.Measure / bar.NoteCount;
             }
             return t;
         }
