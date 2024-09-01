@@ -8,7 +8,7 @@ namespace Loader
         public string FilePath = "";
         public string SoundPath = "";
         public string Hash = "";
-        public bool Enable;
+        public bool Enable { get; set; }
         public Header Header;
         public Course[] Courses = new Course[5];
 
@@ -64,14 +64,17 @@ namespace Loader
                 bool read = false;
                 int nowcourse = 3;
                 List<string> strings = [];
+
+                double lev = 0;
+
                 foreach (string str in list)
                 {
                     string[] header = str.Split(':');
                     if (header.Length > 1)
                     {
-                        switch (header[0])
+                        switch (header[0].ToLower())
                         {
-                            case "COURSE":
+                            case "course":
                                 nowcourse = Course.GetCourse(header[1]);
                                 break;
                         }
@@ -80,6 +83,7 @@ namespace Loader
                     {
                         if (nowcourse == i)
                         {
+                            lev = Header.Level;
                             read = true;
                         }
                     }
@@ -93,6 +97,8 @@ namespace Loader
                     }
                 }
                 Courses[i] = new Course(Header, strings);
+                Courses[i].Level = (int)lev;
+                Courses[i].Designer = Header.Designer[i];
             }
 
             SoundPath = $"{Path.GetDirectoryName(FilePath)}\\{Header.Wave}";
@@ -113,6 +119,10 @@ namespace Loader
             using (Sound sound = new(SoundPath))
             {
                 Length = sound.Length;
+                foreach (var course in Courses)
+                {
+                    course.Length = Length;
+                }
             }
         }
 

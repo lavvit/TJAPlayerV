@@ -2,10 +2,38 @@ namespace Loader
 {
     public class Course
     {
-        public Header Head;
+        public bool Enable
+        {
+            get
+            {
+                return Lanes[0].Length > 0;
+            }
+        }
+
+        public int Level { get; set; }
+        public string Designer { get; set; }
+        public int Notes
+        {
+            get
+            {
+                int n = 0;
+                foreach (var lane in Lanes[0])
+                {
+                    foreach (var chip in lane.Chips)
+                    {
+                        if (chip.Time < Length && chip.Type > ENote.None && chip.Type < ENote.Roll) n++;
+                    }
+                }
+                return n;
+            }
+        }
+
+        public double Length;
+        private Header Head;
         public List<string> Texts = [];
         public Bar[][] Lanes = [];
         public List<(int line, int pos)>[] LongList = [[]];
+        public List<(bool On, double Time)> GogoList = [];
         //dong
         public Course(Header header, List<string> text)
         {
@@ -15,6 +43,11 @@ namespace Loader
 
             Read();
             Set();
+        }
+
+        public override string ToString()
+        {
+            return $"Lv.{Level} {Notes}Notes{(Designer != "" ? $" by.{Designer}" : "")}";
         }
 
         public int BarCount()
@@ -154,6 +187,7 @@ namespace Loader
                             var spls = split.ToList();
                             spls.RemoveAt(0);
                             string value = string.Join(" ", spls).Trim();
+                            double ct = bar.Time + GetTime(bar, comm.Position - 1);
                             switch (split[0].ToLower())
                             {
                                 case "scroll":
@@ -177,6 +211,12 @@ namespace Loader
                                     else measure = 1;
                                     bar.Measure = measure;
                                     break;
+                                case "gogostart":
+                                    GogoList.Add((true, ct));
+                                    break;
+                                case "gogoend":
+                                    GogoList.Add((false, ct));
+                                    break;
                             }
                         }
                     }
@@ -184,6 +224,7 @@ namespace Loader
                     var chip = bar.Chips[j];
                     chip.BPM = bpm;
                     chip.Scroll = scroll;
+                    Length = chip.Time;
                 }
                 double length = GetTime(bar, bar.Chips.Count);
                 for (int j = 0; j < bar.Chips.Count; j++)
@@ -243,6 +284,17 @@ namespace Loader
                 t += 240000.0 / bpm / bar.Measure / bar.NoteCount;
             }
             return t;
+        }
+
+        public bool IsGogo(double time)
+        {
+            bool go = false;
+            foreach (var gogo in GogoList)
+            {
+                if (time < gogo.Time) return go;
+                go = gogo.On;
+            }
+            return false;
         }
 
         public static int GetCourse(string str)

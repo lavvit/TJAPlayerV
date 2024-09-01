@@ -10,6 +10,9 @@ namespace Loader
         public double BPM = 120;
         public double Demo = 0;
 
+        public double Level = 0;
+        public string[] Designer = ["", "", "", "", ""];
+
         public Header() { }
 
         public Header(List<string> list)
@@ -51,6 +54,22 @@ namespace Loader
                         case "demostart":
                             if (float.TryParse(value, out fval)) Demo = fval;
                             else double.TryParse(value, out Demo);
+                            break;
+                        case "level":
+                            if (float.TryParse(value, out fval)) Level = fval;
+                            else double.TryParse(value, out Level);
+                            break;
+                        case "maker":
+                        case "notesdesigner":
+                            for (int i = 0; i < 5; i++)
+                                Designer[i] = value;
+                            break;
+                        case "notesdesigner0":
+                        case "notesdesigner1":
+                        case "notesdesigner2":
+                        case "notesdesigner3":
+                        case "notesdesigner4":
+                            Designer[int.Parse(split[0][split[0].Length - 1].ToString())] = value;
                             break;
                     }
                 }
